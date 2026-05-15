@@ -13,9 +13,8 @@ params:
 
   author:
     name: "最后的DBA"
-    email: "liuzhilong62@outlook.com"
-    headline: "PostgreSQL DBA"
-    bio: "PostgreSQL 数据库技术博客\n📡 微信公众号：最后的DBA"
+    headline: "PostgreSQL DBA · 数据库老司机"
+    bio: "📡 微信公众号：最后的DBA"
     image: "img/avatar.jpg"
     imageQuality: 96
     links:

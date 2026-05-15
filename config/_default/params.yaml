@@ -1,4 +1,4 @@
-colorScheme: "blowfish"
+colorScheme: "ocean"
 defaultAppearance: "light"
 autoSwitchAppearance: true
 
@@ -16,7 +16,7 @@ footer:
   showMenu: false
   showCopyright: true
   showThemeAttribution: false
-  showAppearanceSwitcher: true
+  showAppearanceSwitcher: false
   showScrollToTop: true
 
 homepage:
@@ -25,7 +25,7 @@ homepage:
   showRecentItems: 10
   showMoreLink: true
   showMoreLinkDest: "/posts/"
-  cardView: false
+  cardView: true
   cardViewScreenWidth: false
 
 article:
@@ -60,4 +60,4 @@ list:
   showViews: false
   showLikes: false
   groupByYear: true
-  cardView: false
+  cardView: true
