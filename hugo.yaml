@@ -38,7 +38,7 @@ related:
 
 # 保留 Jekyll 文章的旧 URL 格式
 permalinks:
-  posts: "/:sections[1:]/:year/:month/:day/:slug/"
+  posts: "/:year/:month/:day/:slug/"
 
 # 告诉 Hugo posts/ 是主要内容区
 mainSections: ["posts"]
