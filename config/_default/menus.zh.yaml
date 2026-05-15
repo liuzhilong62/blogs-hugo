@@ -1,0 +1,25 @@
+main:
+  - name: "首页"
+    pageRef: "/"
+    weight: 10
+  - name: "PostgreSQL案例"
+    pageRef: "categories/postgresql案例"
+    weight: 20
+  - name: "PostgreSQL内功修炼"
+    pageRef: "categories/postgresql内功修炼"
+    weight: 30
+  - name: "读书笔记"
+    pageRef: "categories/读书笔记"
+    weight: 40
+  - name: "源码解析"
+    pageRef: "categories/源码解析"
+    weight: 50
+  - name: "论文解读"
+    pageRef: "categories/论文解读"
+    weight: 60
+  - name: "AI"
+    pageRef: "categories/aiops"
+    weight: 70
+  - name: "关于"
+    pageRef: "about"
+    weight: 80

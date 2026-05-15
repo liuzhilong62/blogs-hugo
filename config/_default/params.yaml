@@ -1,0 +1,63 @@
+colorScheme: "blowfish"
+defaultAppearance: "light"
+autoSwitchAppearance: true
+
+enableSearch: true
+enableCodeCopy: true
+enableStructuredBreadcrumbs: true
+enableA11y: false
+
+fingerprintAlgorithm: "sha512"
+
+header:
+  layout: "fixed"
+
+footer:
+  showMenu: false
+  showCopyright: true
+  showThemeAttribution: false
+  showAppearanceSwitcher: true
+  showScrollToTop: true
+
+homepage:
+  layout: "profile"
+  showRecent: true
+  showRecentItems: 10
+  showMoreLink: true
+  showMoreLinkDest: "/posts/"
+  cardView: false
+  cardViewScreenWidth: false
+
+article:
+  showDate: true
+  showDateUpdated: false
+  showAuthor: true
+  showBreadcrumbs: true
+  showDraftLabel: true
+  showEdit: false
+  showHeadingAnchors: true
+  showPagination: true
+  invertPagination: false
+  showReadingTime: true
+  showTableOfContents: true
+  showTaxonomies: true
+  showCategories: true
+  showTags: true
+  showWordCount: true
+  showViews: false
+  showLikes: false
+  seriesOpened: false
+  showRelatedContent: true
+  relatedContentLimit: 3
+
+list:
+  showBreadcrumbs: true
+  showTableOfContents: false
+  showTaxonomies: true
+  showCategories: true
+  showTags: true
+  showSummary: true
+  showViews: false
+  showLikes: false
+  groupByYear: true
+  cardView: false

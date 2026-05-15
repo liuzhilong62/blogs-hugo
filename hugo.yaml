@@ -1,0 +1,44 @@
+# ============================================================
+# Hugo + Blowfish 博客配置 — 最后的DBA
+# ============================================================
+baseURL: "https://liuzhilong62.github.io/blogs-hugo/"
+theme: "blowfish"
+defaultContentLanguage: "zh"
+enableRobotsTXT: true
+enableEmoji: true
+summaryLength: 0
+paginate: 10
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
+taxonomies:
+  category: categories
+  tag: tags
+  series: series
+
+outputs:
+  home: ["HTML", "RSS", "JSON"]
+
+imaging:
+  anchor: Center
+
+related:
+  threshold: 0
+  toLower: false
+  indices:
+    - name: tags
+      weight: 100
+    - name: categories
+      weight: 100
+    - name: date
+      weight: 10
+
+# 保留 Jekyll 文章的旧 URL 格式
+permalinks:
+  posts: "/:sections[1:]/:year/:month/:day/:slug/"
+
+# 告诉 Hugo posts/ 是主要内容区
+mainSections: ["posts"]
