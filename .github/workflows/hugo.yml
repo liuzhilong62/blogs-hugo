@@ -14,18 +14,30 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "0.145.0"
+          submodules: recursive
+
+      - uses: actions/configure-pages@v5
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.161.1"
           extended: true
-      - run: hugo --minify
+
+      - name: Build
+        run: hugo --minify --verbose
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
+
       - uses: actions/deploy-pages@v4
