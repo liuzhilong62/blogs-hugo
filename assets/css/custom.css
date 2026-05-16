@@ -1,16 +1,14 @@
 /* ===== 页面背景 ===== */
 body {
   background:
-    linear-gradient(rgba(248,249,250,.55), rgba(248,249,250,.55)),
-    url('/img/elephant-bg.jpg') top center/100% auto no-repeat;
-  background-attachment: scroll;
+    linear-gradient(rgba(248,249,250,.5), rgba(248,249,250,.5)),
+    url('/img/elephant-bg.jpg') top center/100% 400px no-repeat;
   background-color: #f8f9fa;
 }
 
 [data-theme="dark"] body {
   background:
-    linear-gradient(rgba(13,17,23,.75), rgba(13,17,23,.75)),
-    url('/img/elephant-bg.jpg') top center/100% auto no-repeat;
-  background-attachment: scroll;
+    linear-gradient(rgba(13,17,23,.7), rgba(13,17,23,.7)),
+    url('/img/elephant-bg.jpg') top center/100% 400px no-repeat;
   background-color: #0d1117;
 }
