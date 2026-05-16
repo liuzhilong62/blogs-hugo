@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="50%" stop-color="#16213e"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#336791"/>
+      <stop offset="100%" stop-color="#5b9bd5"/>
+    </linearGradient>
+    <linearGradient id="glow1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#336791" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#5b9bd5" stop-opacity="0.05"/>
+    </linearGradient>
+    <linearGradient id="glow2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5b9bd5" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#336791" stop-opacity="0.02"/>
+    </linearGradient>
+    <filter id="blur1">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+    <filter id="blur2">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+
+  <!-- Base -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Glow orbs -->
+  <circle cx="200" cy="150" r="180" fill="#336791" opacity="0.12" filter="url(#blur1)"/>
+  <circle cx="1000" cy="500" r="220" fill="#5b9bd5" opacity="0.08" filter="url(#blur1)"/>
+  <circle cx="600" cy="315" r="250" fill="#336791" opacity="0.06" filter="url(#blur2)"/>
+
+  <!-- Geometric grid lines -->
+  <g stroke="#336791" stroke-opacity="0.08" stroke-width="1" fill="none">
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+  </g>
+
+  <!-- Diagonal lines -->
+  <g stroke="#5b9bd5" stroke-opacity="0.06" stroke-width="1" fill="none">
+    <line x1="0" y1="0" x2="1200" y2="630"/>
+    <line x1="300" y1="0" x2="1200" y2="450"/>
+    <line x1="0" y1="200" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Accent bar at top -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Hexagon cluster (PG elephant hint) -->
+  <g transform="translate(900, 180)" fill="none" stroke="#336791" stroke-opacity="0.15" stroke-width="1.5">
+    <polygon points="0,-40 34.6,-20 34.6,20 0,40 -34.6,20 -34.6,-20"/>
+    <polygon points="60,-20 94.6,0 94.6,40 60,60 25.4,40 25.4,0"/>
+    <polygon points="-60,-20 -25.4,0 -25.4,40 -60,60 -94.6,40 -94.6,0"/>
+    <polygon points="30,40 64.6,60 64.6,100 30,120 -4.6,100 -4.6,60"/>
+    <polygon points="-30,40 4.6,60 4.6,100 -30,120 -64.6,100 -64.6,60"/>
+  </g>
+
+  <!-- Cross pattern left side -->
+  <g transform="translate(200, 400)" stroke="#5b9bd5" stroke-opacity="0.1" stroke-width="1">
+    <line x1="-60" y1="0" x2="60" y2="0"/>
+    <line x1="0" y1="-60" x2="0" y2="60"/>
+    <circle cx="0" cy="0" r="30" fill="none"/>
+    <circle cx="0" cy="0" r="60" fill="none"/>
+  </g>
+
+  <!-- Dots pattern -->
+  <g fill="#5b9bd5" opacity="0.12">
+    <circle cx="150" cy="80" r="2"/>
+    <circle cx="450" cy="120" r="1.5"/>
+    <circle cx="750" cy="60" r="2"/>
+    <circle cx="1050" cy="100" r="1.5"/>
+    <circle cx="100" cy="350" r="1.5"/>
+    <circle cx="400" cy="500" r="2"/>
+    <circle cx="700" cy="550" r="1.5"/>
+    <circle cx="1100" cy="400" r="2"/>
+    <circle cx="500" cy="300" r="1"/>
+    <circle cx="800" cy="280" r="1"/>
+  </g>
+
+  <!-- Title area -->
+  <text x="420" y="300" font-family="system-ui,-apple-system,sans-serif" font-size="72" font-weight="800" fill="#5b9bd5" opacity="0.12" letter-spacing="4">PG</text>
+  <text x="420" y="380" font-family="system-ui,-apple-system,sans-serif" font-size="28" font-weight="600" fill="#c8d6e5" opacity="0.2" letter-spacing="8">最后的DBA</text>
+</svg>
