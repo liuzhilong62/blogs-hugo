@@ -2,7 +2,7 @@
 title: "最后的DBA"
 ---
 
-PostgreSQL DBA，关注数据库内核、案例分析、源码阅读。
+PostgreSQL DBA，关注数据库内核、案例分析、源码解读。
 
 <div class="flex flex-row flex-wrap items-center justify-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
   <span>📝 <strong class="text-neutral-800 dark:text-neutral-200">76</strong> 篇文章</span>
