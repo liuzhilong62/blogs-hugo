@@ -19,8 +19,6 @@ footer:
   showAppearanceSwitcher: true
   showScrollToTop: true
 
-defaultFeaturedImage: "img/default-featured.svg"
-
 homepage:
   layout: "profile"
   showRecent: true
@@ -48,8 +46,7 @@ article:
   showWordCount: false
   showViews: false
   showLikes: false
-  showHero: true
-  heroStyle: "background"
+  showHero: false
   seriesOpened: false
   showRelatedContent: true
   relatedContentLimit: 3
