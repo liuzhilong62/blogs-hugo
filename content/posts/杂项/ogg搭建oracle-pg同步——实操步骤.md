@@ -1,3 +1,9 @@
+---
+title: "ogg搭建oracle-pg同步——实操步骤"
+date: 2024-08-13
+categories: [杂项]
+---
+
 ​
 
 源库：  oracle(11.2.0.4) 192.168.10.141
