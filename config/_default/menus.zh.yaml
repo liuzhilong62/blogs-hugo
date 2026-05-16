@@ -2,29 +2,38 @@ main:
   - name: "首页"
     pageRef: "/"
     weight: 10
-  - name: "案例"
-    pageRef: "categories/postgresql案例"
+  - name: "分类"
     weight: 20
-  - name: "内功"
-    pageRef: "categories/postgresql内功修炼"
-    weight: 30
-  - name: "源码"
-    pageRef: "categories/源码解析"
-    weight: 40
-  - name: "论文"
-    pageRef: "categories/论文解读"
-    weight: 50
-  - name: "笔记"
-    pageRef: "categories/读书笔记"
-    weight: 60
+    children:
+      - name: "PostgreSQL案例"
+        pageRef: "categories/postgresql案例"
+        weight: 1
+      - name: "PostgreSQL内功修炼"
+        pageRef: "categories/postgresql内功修炼"
+        weight: 2
+      - name: "PostgreSQL源码解析"
+        pageRef: "categories/postgresql源码解析"
+        weight: 3
+      - name: "论文解读"
+        pageRef: "categories/论文解读"
+        weight: 4
+      - name: "读书笔记"
+        pageRef: "categories/读书笔记"
+        weight: 5
+      - name: "杂项"
+        pageRef: "categories/杂项"
+        weight: 6
+      - name: "AIOps"
+        pageRef: "categories/aiops"
+        weight: 7
   - name: "关于"
     pageRef: "about"
-    weight: 70
+    weight: 30
   - name: "x-twitter"
     url: "https://x.com/liuzhilong62"
     pre: "x-twitter"
-    weight: 80
+    weight: 40
   - name: "github"
     url: "https://github.com/liuzhilong62"
     pre: "github"
-    weight: 90
+    weight: 50
