@@ -18,6 +18,7 @@ footer:
   showThemeAttribution: false
   showAppearanceSwitcher: true
   showScrollToTop: true
+  showLicense: true
 
 homepage:
   layout: "profile"

@@ -9,7 +9,3 @@ title: "最后的DBA"
   <span>·</span>
   <span class="rounded-full bg-neutral-100 dark:bg-neutral-800 px-2.5 py-0.5 text-xs">🔄 更新中</span>
 </div>
-
----
-
-📡 微信公众号：**最后的DBA**
