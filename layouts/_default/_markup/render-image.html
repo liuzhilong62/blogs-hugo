@@ -1,0 +1,5 @@
+{{ $dest := .Destination }}
+{{ if strings.HasPrefix $dest "../../../static/" }}
+  {{ $dest = replace $dest "../../../static" "" }}
+{{ end }}
+<img src="{{ $dest | safeURL }}" alt="{{ .Text }}" {{ with .Title }}title="{{ . }}"{{ end }} />
