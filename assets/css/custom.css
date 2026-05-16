@@ -6,14 +6,12 @@ body::before {
   pointer-events: none;
   z-index: -1;
   background:
-    linear-gradient(135deg, rgba(248,249,250,.85) 0%, rgba(248,249,250,.6) 40%, rgba(248,249,250,.3) 100%),
-    url('/img/elephant-bg.jpg') no-repeat right center fixed;
-  background-size: auto 100%, auto 100%;
+    linear-gradient(rgba(248,249,250,.7), rgba(248,249,250,.7)),
+    url('/img/elephant-bg.jpg') center/cover fixed no-repeat;
 }
 
 [data-theme="dark"] body::before {
   background:
-    linear-gradient(135deg, rgba(13,17,23,.9) 0%, rgba(13,17,23,.7) 40%, rgba(13,17,23,.15) 100%),
-    url('/img/elephant-bg.jpg') no-repeat right center fixed;
-  background-size: auto 100%, auto 100%;
+    linear-gradient(rgba(13,17,23,.85), rgba(13,17,23,.85)),
+    url('/img/elephant-bg.jpg') center/cover fixed no-repeat;
 }
