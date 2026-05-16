@@ -1,0 +1,34 @@
+/* ===== 页面背景 ===== */
+body {
+  background-color: #f8f9fa;
+  background-image:
+    /* 顶部光晕 */
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(51, 103, 145, 0.06) 0%, transparent 60%),
+    /* 右下光晕 */
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.04) 0%, transparent 60%),
+    /* 几何网格 */
+    linear-gradient(rgba(51, 103, 145, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(51, 103, 145, 0.04) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    60px 60px,
+    60px 60px;
+  background-attachment: fixed;
+}
+
+/* 暗色模式 */
+[data-theme="dark"] body {
+  background-color: #0d1117;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(91, 155, 213, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.04) 0%, transparent 60%),
+    linear-gradient(rgba(48, 54, 61, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    60px 60px,
+    60px 60px;
+  background-attachment: fixed;
+}

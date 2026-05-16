@@ -19,8 +19,6 @@ footer:
   showAppearanceSwitcher: false
   showScrollToTop: true
 
-defaultFeaturedImage: "img/default-featured.svg"
-
 homepage:
   layout: "profile"
   showRecent: true
