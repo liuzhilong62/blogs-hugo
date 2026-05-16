@@ -1,19 +1,16 @@
-/* ===== Profile 区域背景 ===== */
-main > article:first-of-type > sectionheader {
-  position: relative;
-}
-main > article:first-of-type > sectionheader::before {
-  content: '';
-  position: absolute;
-  inset: -2rem -50vw 0 -50vw;
-  z-index: -1;
+/* ===== 页面背景 ===== */
+body {
   background:
-    linear-gradient(rgba(248,249,250,.55), rgba(248,249,250,.65)),
-    url('/img/elephant-bg.jpg') center 30%/cover no-repeat;
+    linear-gradient(rgba(248,249,250,.55), rgba(248,249,250,.55)),
+    url('/img/elephant-bg.jpg') top center/100% auto no-repeat;
+  background-attachment: scroll;
+  background-color: #f8f9fa;
 }
 
-[data-theme="dark"] main > article:first-of-type > sectionheader::before {
+[data-theme="dark"] body {
   background:
-    linear-gradient(rgba(13,17,23,.75), rgba(13,17,23,.85)),
-    url('/img/elephant-bg.jpg') center 30%/cover no-repeat;
+    linear-gradient(rgba(13,17,23,.75), rgba(13,17,23,.75)),
+    url('/img/elephant-bg.jpg') top center/100% auto no-repeat;
+  background-attachment: scroll;
+  background-color: #0d1117;
 }
