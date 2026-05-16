@@ -2,7 +2,5 @@
 {{ if strings.HasPrefix $dest "../../../static/" }}
   {{ $dest = replace $dest "../../../static" "" }}
 {{ end }}
-{{ if strings.Contains $dest "lastdba.com/static/img/" }}
-  {{ $dest = replace $dest "https://lastdba.com/static/img/" "/img/" }}
-{{ end }}
+{{ $dest = replace $dest "https://raw.githubusercontent.com/liuzhilong62/blogs/main/static/img/" "/img/" }}
 <img src="{{ $dest | safeURL }}" alt="{{ .Text }}" {{ with .Title }}title="{{ . }}"{{ end }} />
