@@ -12,7 +12,7 @@ params:
   copyright: "© 2025 liuzhilong62"
 
   author:
-    name: "最后的DBA"
+    name: "liuzhilong62"
     headline: "微信公众号：最后的DBA"
     bio: "PostgreSQL DBA，关注数据库内核、案例分析、源码解读"
     image: "img/avatar.jpg"
