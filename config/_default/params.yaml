@@ -21,8 +21,7 @@ footer:
   showLicense: true
 
 homepage:
-  layout: "hero"
-  homepageImage: "img/elephant-bg.jpg"
+  layout: "profile"
   showRecent: true
   showRecentItems: 10
   showMoreLink: true
