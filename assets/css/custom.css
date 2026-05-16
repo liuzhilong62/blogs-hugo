@@ -1,4 +1,4 @@
-/* ===== 页面背景光晕 ===== */
+/* ===== 页面背景 ===== */
 body::before {
   content: '';
   position: fixed;
@@ -6,11 +6,14 @@ body::before {
   pointer-events: none;
   z-index: -1;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(51, 103, 145, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.03) 0%, transparent 60%);
+    linear-gradient(135deg, rgba(248,249,250,.85) 0%, rgba(248,249,250,.6) 40%, rgba(248,249,250,.3) 100%),
+    url('/img/elephant-bg.jpg') no-repeat right center fixed;
+  background-size: auto 100%, auto 100%;
 }
+
 [data-theme="dark"] body::before {
   background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(91, 155, 213, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.03) 0%, transparent 60%);
+    linear-gradient(135deg, rgba(13,17,23,.9) 0%, rgba(13,17,23,.7) 40%, rgba(13,17,23,.15) 100%),
+    url('/img/elephant-bg.jpg') no-repeat right center fixed;
+  background-size: auto 100%, auto 100%;
 }
