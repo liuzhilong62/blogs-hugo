@@ -13,7 +13,7 @@ ogg下载地址：<https://www.oracle.com/technetwork/middleware/goldengate/down
 glibc问题处理：<https://www.cnblogs.com/hxlasky/p/16779047.html>
 
 
-![img](https://i-blog.csdnimg.cn/blog_migrate/3cca49c09440f93e7dd7998a2776e5c8.png)
+![img](/img/csdn/6d5467d7acac.png)
 ### 1.源端创建库及表
 ```sql
 

@@ -8,10 +8,10 @@ description: "详解PostgreSQL共享内存体系结构，涵盖shared_buffer、w
 
 # 体系结构
 
-![Shared Memory in PostgreSQL](https://i-blog.csdnimg.cn/blog_migrate/20ffbf3377b1385e5cb4ab7cdb7517d0.png)
+![Shared Memory in PostgreSQL](/img/csdn/8ca0ab97a875.png)
 （https://www.postgresql.fastware.com/blog/lets-get-back-to-basics-postgresql-memory-components）
 
-![PostgreSQL进程结构和内存结构 - 图2](https://i-blog.csdnimg.cn/blog_migrate/1491f00b8fd33e838878de08a0ef061c.png)
+![PostgreSQL进程结构和内存结构 - 图2](/img/csdn/6ec5a1dae77e.png)
 （http://geekdaxue.co/read/fcant@sql/qts5is)
 
 
@@ -21,7 +21,7 @@ description: "详解PostgreSQL共享内存体系结构，涵盖shared_buffer、w
 
 ## linux的共享内存实现
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/bc7d2eb1041cf2a4ceb7c368716af454.png)
+![在这里插入图片描述](/img/csdn/026fc1403eb5.png)
 
 (https://momjian.us/main/writings/pgsql/inside_shmem.pdf)
 
@@ -34,7 +34,7 @@ description: "详解PostgreSQL共享内存体系结构，涵盖shared_buffer、w
 **mmap()**
 map file 到一个进程的地址空间使用的是`mmap()`，匿名内存也可以用`mmap()`。[mmap](https://www.man7.org/linux/man-pages/man2/mmap.2.html)是标准C库里的。匿名内存使用的flag应是`MAP_ANONYMOUS` or`MAP_ANON`，此时`fd`为空或者-1，`offset`应该为0。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/6419058d93e2831b8d1f7f1be01820ff.png)
+![在这里插入图片描述](/img/csdn/fcd702da523d.png)
 
 <http://www.tutorialsdaddy.com/courses/linux-device-driver/lessons/mmap/>
 
@@ -42,7 +42,7 @@ map file 到一个进程的地址空间使用的是`mmap()`，匿名内存也可
 
 ## pg中的共享内存
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/9a9634109d1bd4395de8c6fbec60da8f.png)
+![在这里插入图片描述](/img/csdn/0a37e863fe80.png)
 <https://www.interdb.jp/pg/pgsql02.html>
 
 pg中有许多共享内存：shared buffers、wal buffer、clog buffer、lock space等
@@ -193,7 +193,7 @@ InitBufferPool(void)
 # 私有内存
 
 私有内存是pg为每个session或进程分配的内存区域，它们通常不像shared buffer那样只有一个。每个进程的私有内存是不能相互访问的。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/13e3046718c41ce86c085caf5200dfd7.png)
+![在这里插入图片描述](/img/csdn/b9b739d63ed8.png)
 
 **`temp_buffers`**
 temp buffer用于缓存临时表数据，默认8m。temp_buffers是私有内存，所以临时表只能当前session可见。
@@ -653,7 +653,7 @@ so，写入的init file为：
 ```
 
 初始化三阶段的调用示意图：
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/2169da7d7246631ffa8712615c7d3a4a.png)
+![在这里插入图片描述](/img/csdn/f743c6c69083.png)
 （https://blog.japinli.top/2022/07/postgres-relcache-and-syscache/）
 
 
@@ -958,7 +958,7 @@ PostgresSQL通过memory context机制来管理内存。之前有做过[一篇mem
  - 除了调试之外，memory contexts的内存使用情况是比较难观察的。pg14开始有pg_backend_memory_contexts视图可以观察当前会话的当前memory_context使用情况
 
 SQL操作产生memory context的时机：
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/db9e01200d37c464558521b4c7f1be5e.png)
+![在这里插入图片描述](/img/csdn/b269e3547cbf.png)
 
 
 （https://www.pgcon.org/2019/schedule/attachments/514_introduction-memory-contexts.pdf)
@@ -1130,7 +1130,7 @@ AllocSetAlloc(MemoryContext context, Size size)
 }
 ```
 
-![Alt text](https://i-blog.csdnimg.cn/blog_migrate/a62250fbc7b5da10d36c7f1d0b4f4f02.png)
+![Alt text](/img/csdn/8731cbdd1398.png)
 
 （https://smartkeyerror.com/PostgreSQL-MemoryContext）
 
@@ -1199,7 +1199,7 @@ TopMemoryContext: 97680 total in 5 blocks; 16856 free (16 chunks); 80824 used
 
 
 # 小结
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/298e7c452f14318d1208dde83d89ae50.png)
+![在这里插入图片描述](/img/csdn/cac547b38cb3.png)
 
 
 

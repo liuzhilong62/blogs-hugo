@@ -252,7 +252,7 @@ alter table lzl add constraint pklzl primary key (id, partition_key) using index
 with t as (select id from lzl where id=8723 and rownum<= 100 )
 select  STATUS ,FILE_ID ,DATE_UPDATED  from lzl where id in ( select id from t)
 ```
-![image.png](https://i-blog.csdnimg.cn/blog_migrate/acae553f14f43a1af7e9aa4405e3226a.png)
+![image.png](/img/csdn/e6b4077b9290.png)
 ```sql
 update lzl set
 STATUS = '00',
@@ -260,7 +260,7 @@ FILE_ID = null,
 DATE_UPDATED = sysdate
 where id in (select id from lzl where id=8723 and rownum<= 100)
 ```
-![image.png](https://i-blog.csdnimg.cn/blog_migrate/7f32b1bcf7f026f99fdbd6b9d203e763.png)
+![image.png](/img/csdn/35e2fc036d9f.png)
 oracle里，select和update都使用了nest loop，访问所有分区partition range all，所以oracle无论是select和update，t表为驱动表，因为是in所以结果进行了排序去重，所以oracle的执行计划不是30\*30次访问，而是跟驱动表里的结果集有关，如果是n条数据，那么访问n\*30次分区。因为驱动表t没有什么数据，所以这个执行计划没什么问题。
 
 

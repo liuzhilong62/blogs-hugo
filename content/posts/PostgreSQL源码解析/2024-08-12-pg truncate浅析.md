@@ -160,7 +160,7 @@ ROLLBACK
  
 
 # 功能更新
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/2c5bd7a69f4faab197b5190b8084a820.png)
+![在这里插入图片描述](/img/csdn/c1c4036557be.png)
 truncate更新功能不多，只需要注意14的时候支持truncate foreign tables即可。truncate foreign tables前提是fdw得支持TRUNCATE API
 >Also it extends postgres_fdw  so that it can issue TRUNCATE command to foreign servers, by adding  new routine for that TRUNCATE API.
 
@@ -168,8 +168,8 @@ truncate更新功能不多，只需要注意14的时候支持truncate foreign ta
 
 
 # pg truncate和其他库的功能差异
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/bbce89813b77e66e4a1a8f335ab7ec34.png)
-![在这里插入图片描述](https://i-blog.csdnimg.cn/blog_migrate/4d7ca906e1e45ee6ddf8b8e6e2b2a9ec.png)
+![在这里插入图片描述](/img/csdn/8b204baa363f.png)
+![在这里插入图片描述](/img/csdn/b7ebb636b6b2.png)
 truncate很快、8级锁等特性已经是人尽皆知的事情了，相对于其他数据库，pg还可以：**选择是否重置序列**（`RESTART IDENTITY` `CONTINUE IDENTITY`）、**回滚**、**简单的授权**。
 
 

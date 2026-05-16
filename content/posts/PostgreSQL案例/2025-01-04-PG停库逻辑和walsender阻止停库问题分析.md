@@ -951,7 +951,7 @@ WalSndWaitStopping(void)
 # 停库流程图
 撸完源码好像懂了又好像没懂，需要一个停库流程图来理清思路。
 汇总fast shutdown停库流程图：
-![pg fast停库流程.png](https://oss-emcsprod-public.modb.pro/image/editor/20250104-1875383284079804416_4587.png)
+![pg fast停库流程.png](/img/csdn/464a8c3e13dd.png)
 
 （高清大图：<https://www.processon.com/view/link/6778a73a04a8344b9502637a>）
 

@@ -274,7 +274,7 @@ bt
 ## 索引dead tuple
 如果vacuum没有真的“跑起来”，那么索引的dead tuple还是会指向死元组
 参考[从很慢的唯一索引扫描到索引膨胀](https://blog.csdn.net/qq_40687433/article/details/137368881?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522172420012616800225589534%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=172420012616800225589534&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-137368881-null-null.nonecase&utm_term=%E8%86%A8%E8%83%80&spm=1018.2226.3001.4450)
-![image.png](https://img-blog.csdnimg.cn/img_convert/e25a1502b1c530586f34d800d59434d1.png)
+![image.png](/img/csdn/16f28ad1a331.png)
 ## autovacuum未回收死元组
 表膨胀这么大，autovacuum不应该回收吗？
 ```

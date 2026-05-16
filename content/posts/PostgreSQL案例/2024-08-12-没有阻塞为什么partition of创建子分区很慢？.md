@@ -22,7 +22,7 @@ process 33569 still waiting for RowExclusiveLock on relation 53733 of database 1
 ```
 partition of添加分区时，会在主表上加8级锁，然后阻塞分区表上的所有操作。正常来说partition of添加分区是非常快的，锁也会立即释放。不过如果分区表上有长事务，那么这个主表上的8级锁得等着，然后就造成后续的阻塞。
 盗[自己的图](https://blog.csdn.net/qq_40687433/article/details/132525655?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171591065916800225570929%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=171591065916800225570929&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-132525655-null-null.nonecase&utm_term=%E5%88%86%E5%8C%BA%E8%A1%A8&spm=1018.2226.3001.4450)：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/direct/a116bdcc67984fcf8c3f13faa9ed7e88.png)
+![在这里插入图片描述](/img/csdn/6c7f70fc3b60.png)
 
 然而这个案例表上没有长事务，partition of添加分区却执行了35分钟。
 从历史的进程信息可以看出这个进程是D状态，是有问题的。刚开始以为是内存、磁盘这些问题，排查了一圈都正常。
