@@ -1,21 +1,19 @@
 /* ===== Profile 区域背景 ===== */
-/* 只覆盖头像+名字+社交链接区域，往下滚就消失 */
-article.h-entry > header {
+main > article:first-of-type > sectionheader {
   position: relative;
 }
-article.h-entry > header::before {
+main > article:first-of-type > sectionheader::before {
   content: '';
   position: absolute;
-  inset: -2rem -2rem 0 -2rem;
+  inset: -2rem -50vw 0 -50vw;
   z-index: -1;
-  border-radius: 0 0 1rem 1rem;
   background:
-    linear-gradient(rgba(248,249,250,.55), rgba(248,249,250,.55)),
-    url('/img/elephant-bg.jpg') center/cover no-repeat;
+    linear-gradient(rgba(248,249,250,.55), rgba(248,249,250,.65)),
+    url('/img/elephant-bg.jpg') center 30%/cover no-repeat;
 }
 
-[data-theme="dark"] article.h-entry > header::before {
+[data-theme="dark"] main > article:first-of-type > sectionheader::before {
   background:
-    linear-gradient(rgba(13,17,23,.75), rgba(13,17,23,.75)),
-    url('/img/elephant-bg.jpg') center/cover no-repeat;
+    linear-gradient(rgba(13,17,23,.75), rgba(13,17,23,.85)),
+    url('/img/elephant-bg.jpg') center 30%/cover no-repeat;
 }
