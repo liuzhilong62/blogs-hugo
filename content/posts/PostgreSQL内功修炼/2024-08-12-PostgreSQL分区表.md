@@ -5,22 +5,22 @@ categories: [PostgreSQL内功修炼]
 description: "全面介绍PostgreSQL分区表的声明式分区实现、分区维护策略及查询优化技巧。"
 ---
 
-# 什么是分区表
+## 什么是分区表
 
 ![Postgres Table Partitioning](/img/csdn/787a5ce076e9.png)
 数据库分区表将表数据分成更小的物理分片，以此提高性能、可用性、易管理性。分区表是关系型数据库中比较常见的对大表的优化方式，数据库管理系统一般都提供了分区管理，而业务可以直接访问分区表而不需要调整业务架构，当然好的性能需要合理的分区访问方式。
 
 分区表是数据库中常见的技术，而PostgreSQL中的分区表有许多专有的特性，比如分区表实现方案多、分区为普通表、分区维护方案、SQL优化还有一些分区表的问题。
 
-# 分区表的实现
+## 分区表的实现
 
 PostgreSQL数据库有各式各样的分区实现方式。官方支持的有声明式分区和继承式分区，而三方插件包括pathman、partman等等。在官方声明式分区实现后，基本只推荐一种分区方式：声明式分区。由于再拓展不同实现的分区表的功能、细节、历史等差别会使篇幅过长，且未来意义不大，本篇主要讨论的是声明式分区，其他方式实现的分区功能只会简单介绍。但是由于历史存量和一些功能差异，了解声明分区、继承分区、pathman还是有必要的。
 
-## 声明分区表
+### 声明分区表
 
 声明分区也叫原生分区，从PG10版本开始支持，相当于“官方支持”的分区表，也是最为推荐的分区方式。虽然与继承分区不一样，但是其内部也是用继承表实现的。声明分区只支持3种分区方式：range分区、list分区、hash分区
 
-### range分区
+#### range分区
 
 ![](/img/csdn/f252d7be9e4d.png)
 range分区表以范围进行分区，分区边界为[t1,t2)
@@ -88,7 +88,7 @@ Access method: heap
 
 分区上的主键、索引、字段null/CHECK约束自动创建。由于分区也是独立的表，约束和索引也可以单独在分区上创建。（attach则不会自动创建这些，详见attach一节）
 
-### list分区
+#### list分区
 
 ![](/img/csdn/e3d094556a5d.png)
 list分区以指定的分区值将数据存放到对应的分区上
@@ -125,7 +125,7 @@ insert into cities(name,population) values(null,20);
 
 list分区表可以创建null分区
 
-### hash分区
+#### hash分区
 
 ![](/img/csdn/9e18df7edc15.png)
 hash分区将数据散列存储在各个分区上，以打散热点数据
@@ -201,7 +201,7 @@ Partition constraint: satisfies_hash_partition('412053'::oid, 3, 0, order_id)
 
 hash分区表虽然没有null分区的概念，但是可以存放null数据，null数据存放在remainder 0上。
 
-### 混合分区
+#### 混合分区
 
 分区下面也可以建立分区构成级联模式，子分区可以有不同的分区方式，这样的分区成为混合分区。
 ![](/img/csdn/220e4e6f1544.png)
@@ -259,7 +259,7 @@ INSERT 0 1
 
 数据存放在最底层的子分区中
 
-### 声明分区特性小结
+#### 声明分区特性小结
 
 - **没有interval分区**。没有自带的自动新增分区功能，对于维护来说比较麻烦
 - **分区表的分区本身也是表**，这个特性比较特殊。这不仅仅造成pg可以灵活的操作子分区，更重要的是功能和特性上的影响。
@@ -272,12 +272,12 @@ INSERT 0 1
 - attach不会处理任何索引、约束等等对象
 
 
-## 继承分区表
+### 继承分区表
 
 继承分区也是官方支持的，它利用了PGSQL的继承表特性来实现分区表的功能。继承分区表会比声明分区表更灵活。
 继承分区表的实现需要到了PGSQL中的2个功能：[继承表](https://www.postgresql.org/docs/current/ddl-inherit.html)和写入重定向。写入重定向可以通过[rule](https://www.postgresql.org/docs/current/rules.html)或者trigger来实现。
 
-### 创建继承分区表
+#### 创建继承分区表
 
 创建继承分区表示例：
 **1.创建父表**
@@ -419,7 +419,7 @@ INSERT 0 0
 
 上面的执行计划8月的分区走到了分区上的索引。constraint_exclusion默认打开了继承表的约束排除，上面的查询排除了9月分区，只扫描了8月。然而由于父表没有约束（也加不了）所以父表一定在执行计划里面，但是父表一般都是空的所以影响不大。
 
-### constraint_exclusion
+#### constraint_exclusion
 
 constraint_exclusion拥有控制优化器是否使用约束来减少非必要的访问表，该参数在继承分区表优化上常见，通过减少子表的访问，提升SQL的性能（该功能跟enable_partition_pruning参数类似，enable_partition_pruning用于控制声明式分区表的分区裁剪）。constraint_exclusion有3个值：
 `on`：所有表都会检查约束
@@ -451,7 +451,7 @@ constraint_exclusion拥有控制优化器是否使用约束来减少非必要的
 另外，约束排除本身需要检查所有子表的约束，如果子表约束过多生成执行计划的效率会受到影响，所以继承分区不建议创建过多的子分区。
 
 
-### 添加/删除继承分区表的分区
+#### 添加/删除继承分区表的分区
 
 将一个继承分区做成普通表
 
@@ -470,7 +470,7 @@ CHECK ( logdate >= DATE '2023-10-01' AND logdate < DATE '2023-11-01' );
 ALTER TABLE measurement_202310 INHERIT measurement;
 ```
 
-### 继承分区表特性小结
+#### 继承分区表特性小结
 
  - 继承分区要比声明分区更灵活，但一些声明分区的特性也无法使用
 - 子表会继承父表上的约束，所以如果不是全局约束不要在父表上设置
@@ -483,11 +483,11 @@ ALTER TABLE measurement_202310 INHERIT measurement;
  - 约束排除不能在执行时进行排除，所以建议使用固定值进行查询
  - 使用继承分区表时，同样不要创建太多的子分区
 
-## pg_pathman
+### pg_pathman
 
 pg_pathman是三方插件实现的分区表功能。[github上的pathman readme](https://github.com/postgrespro/pg_pathman)和[使用pg_pathman插件的文章](https://developer.aliyun.com/article/62314)对pathman描述和使用已经非常详细，这里仅摘几个重点汇总和做一些简单的测试。
 
-### pg_pathman基本知识
+#### pg_pathman基本知识
 
 **不再更新**
 
@@ -659,9 +659,9 @@ Access method: heap
 ```
 
 
-# pg分区表的优劣
+## pg分区表的优劣
 
-## 分区表的优势
+### 分区表的优势
 
 - SQL性能提升。在某些场景下，比如把大量的数据分成多个分区，而SQL只需要查那一个分区的数据时，SQL性能可能会极大的提升
 - 分区可以和索引配合使用。比如访问一个分区上的一个索引要比访问一个未分区的大索引要更高效。
@@ -671,7 +671,7 @@ Access method: heap
 - 更多的维护技巧。直接维护一个大表是非常困难的，比如一个极大的表做vacuum时就有很多问题，而分区表的各个分区可以单独运行vacuum。不仅如此，attach/detach、本地索引/约束等可以在很多场景中灵活使用。
 
 
-## 分区表的劣势
+### 分区表的劣势
 
 
 - 在pgsql中，每个分区表的分区都可以当成普通表来对待。分区表过多会导致SQL解析时间较长和更多的内存负载，甚至报错。参考之前的文章[较少的分区也报错too many range table entries](https://editor.csdn.net/md/?articleId=131497779)
@@ -679,7 +679,7 @@ Access method: heap
 - 一些奇怪的问题：[不同用户查看到不同的执行计划](https://mp.weixin.qq.com/s?__biz=MzUyOTAyMzMyNg==&mid=2247489813&idx=1&sn=22360e2bfd40fc2d0caed0a9d825b1d4&chksm=fa663124cd11b832953e789127927ffa0d63d6c948ca8934d5317b8eaae6e71374041ec038f7&mpshare=1&srcid=0728JrXnHdxnfgRVzqosBNcv&sharer_sharetime=1690509489198&sharer_shareid=0412ea33e50b471b98d8859a5c431367&from=singlemessage&scene=1&subscene=10000&sessionid=1690509419&clicktime=1690509545&enterid=1690509545&ascene=1&fasttmpl_type=0&fasttmpl_fullversion=6785798-en_US-zip&fasttmpl_flag=0&realreporttime=1690509545257&devicetype=android-29&version=28002658&nettype=WIFI&abtest_cookie=AAACAA%3D%3D&lang=en&countrycode=CN&exportkey=n_ChQIAhIQCCtq2jm3UsFznlVjxFEOWBLaAQIE97dBBAEAAAAAABKTCFyWAsoAAAAOpnltbLcz9gKNyK89dVj0LyxnG1pA6NiO6PHIsQ0Hy2N7QRbizb9SHdquaFOpOqANqG8jLDcioswZyRnYknjG4bSqNIIKm%2BpRIlK%2FVJxuwolH2%2FQJKSLg4YjccDktYYscUDvYSfHFx1ScEXZkOkbVqrvbBCPy6Gh2GnzulFuuIU68afNtsoBdzZTqHYbL0BfsAUhsz1iGAfSep642UT2CBpWSHWJQvndnwhZxjJ6%2FWO%2FI%2FqwncggiVeDNiv4vwXhluDNn&pass_ticket=mrpzS3wggBDzL9Ua2FmX5v1rYh6zKOnQ4og6oKcKv0ZXRfNBSUpSkGdTAcfXqgDo&wx_header=3)
 
 
-## 分区表的限制
+### 分区表的限制
 
 - **没有原生的自动创建分区功能**
 - **只支持分区索引，不支持全局索引**
@@ -696,7 +696,7 @@ Access method: heap
 
 
 
-## 什么时候该使用分区表？
+### 什么时候该使用分区表？
 
 首先使用分区表必须要了解分区表所带来的优劣势和使用限制，比如数据量很大的时候分区可以带来性能提升，冷热数据分离也更好管理分区数据等等。应该结合本身业务情况、硬件资源选择是否分区和如何分区。但是总会有开发人员会问到底多少数据量该分区等等的问题，使用分区表的建议只能给出一个笼统的回答，如果你不知道怎么分区，可以参考以下建议（如果足够了解表分区，请忽略）：
 
@@ -709,7 +709,7 @@ Access method: heap
 
 
 
-# 分区表的权限
+## 分区表的权限
 
 权限问题是分区表知识点中讨论的比较少的，但是它仍然值得关注。
 由于PostgreSQL数据库有“分区子表也是普通表”这样的概念，这与其他几个常见的数据库（Oracle、mysql）是不同的。比如在oracle中不需要关心分区子表的权限，但是在pg中却需要关注权限问题。
@@ -790,9 +790,9 @@ ERROR:  42501: permission denied for table lzlpartition1_202301
 grant  select on table_partition_allname to username;
 ```
 
-# 分区表的维护
+## 分区表的维护
 
-## 分区表ATTACH/DETACH基本操作
+### 分区表ATTACH/DETACH基本操作
 
 attach/detach可以将一个已存在的表作为分区添加/分离分区表。attach/detach在维护工作中很有用。
 先来看看"create table...partition of"方式添加分区和"drop table"删除分区的锁情况
@@ -1074,7 +1074,7 @@ ALTER TABLE
 
 
 
-## 利用约束减少attach时间
+### 利用约束减少attach时间
 
   1. 分区数据情况，准备操作一个较大分区的attach操作
 
@@ -1196,7 +1196,7 @@ so，
 **在attach分区时，先添加check约束是比较有用，它可以减少attach的执行时间，数据检查在attach前完成就可以了**
 
 
-## 分区表新增分区的正确姿势
+### 分区表新增分区的正确姿势
 
 我们现在知道，attach可以在线执行，而partition of/drop table/detach都会申请等待和阻塞一切的AccessExclusiveLock
 so，
@@ -1217,7 +1217,7 @@ alter table lzlpartition1_202303 drop constraint  chk_202303;
 ```
 
 
-## 分区索引的锁
+### 分区索引的锁
 
 1. 只读事务时创建/删除分区索引
 
@@ -1345,7 +1345,7 @@ UPDATE 1
  - concurrently不会阻塞后续的事务，但本身会被之前的长事务阻塞，也可能导致创建的索引失效，所以需要关注长事务问题
 
 
-## 创建分区索引的正确姿势
+### 创建分区索引的正确姿势
 
 虽然不能以concurrently方式在分区表上创建索引，但可以在分区子表用concurrently创建索引，需要用到语法：
 `CREATE INDEX ON ONLY` ：在主表上创建一个无效索引，不会在子分区自动创建索引
@@ -1457,7 +1457,7 @@ create index concurrently idx_datecreated_202302 on  lzlpartition1_202302(date_c
  ALTER INDEX idx_datecreated ATTACH PARTITION idx_datecreated_202302;
 ```
 
-## 分区表添加主键和唯一索引
+### 分区表添加主键和唯一索引
 
 “主键索引”功能上等于“唯一索引+null约束”（但是主键只能有一个）。分区表创建唯一索引可以参考上面的索引创建最佳实践：only创建主表索引、concurrently创建子表索引、attach。
 而主键虽然支持普通表using index语法，但是目前不支持分区表这样使用：
@@ -1524,7 +1524,7 @@ where relname like '%lzlpartition1%';
 
 
 
-## hash分区表添加分区
+### hash分区表添加分区
 
 如果新增后的分区数为之前的整数倍，那么我们将会知道新分区的数据来自哪个老分区。比如将原本只有3个分区的hash分区表做成6个分区的，我们可以知道分区数据来源
 ![在这里插入图片描述](/img/csdn/84a32ff4147c.png)
@@ -1633,7 +1633,7 @@ SELECT tableoid::regclass,count(*) FROM orders group by tableoid::regclass;
 
 
 
-## 修改分区字段长度索引会重建
+### 修改分区字段长度索引会重建
 
 修改字段需要考虑三个方面：表重写、索引重建、统计信息丢失
 
@@ -1728,7 +1728,7 @@ ALTER TABLE
 建议：先把索引删除，修改完字段后，“父表ONLY+子表CIC+ATTACH”的方式建索引。
 
 
-## 分区表维护小结
+### 分区表维护小结
 
 - partition of/drop table/DETACH需要 ACCESS EXCLUSIVE锁；推荐ATTACH/DETACH CONCURRENTLY，它们不会造成阻塞，DETACH CONCURRENTLY需关注已有长事务
 - attach表分区前可以提前在分区上创建约束，这样会减去在attach时扫描分区数据的时间
@@ -1736,9 +1736,9 @@ ALTER TABLE
 - 分区表不支持using index方式创建主键
 - 需要关注分区表修改字段长度这个例外情况
 
-# 分区表的优化
+## 分区表的优化
 
-## 分区裁剪
+### 分区裁剪
 
 分区裁剪（Partition Pruning）可以为声明式分区提升性能，是分区表优化非常重要的特性。如果没有分区裁剪，那么查询会扫描所有分区。当有分区裁剪时，优化器可以通过where条件过滤那些不需要访问的分区
 ![Partition pruning](/img/csdn/574daf83f7c1.png)
@@ -1834,7 +1834,7 @@ INSERT 0 1
 
 
 
-## partition wise join
+### partition wise join
 
 partition wise join可以减少分区连接的代价。
 假设有两个分区表t1、t2，他们都有3个分区(p1,p2,p3)且分区定义一致，t1的每个分区10条数据，t2的每个分区20条数据：
@@ -1937,7 +1937,7 @@ p1_3<=>p2_3  Hash Join
 如果数据分区足够多，再加上分区裁剪，partition wise join会有很好的优化效果。
 
 
-## partition wise grouping/aggregation
+### partition wise grouping/aggregation
 
 分区表在进行分区数据聚合计算时，分区可以各自算各自的，不需要扫描所有分区数据进行聚合计算，只需要各自分区的数据聚合计算完成后汇总返回即可。
 没有partition wise grouping本质上是“**先扫描所有分区，再聚合计算**”；有partition wise grouping是“**先分区聚合计算，再汇合数据**”。
@@ -2067,7 +2067,7 @@ group by不包含分区键，也可以进行聚合计算，但是必须在稍后
 
 
 
-# 分区表的历史
+## 分区表的历史
 
 声明式分区经过了多个版本的增强，如今已非常成熟。对于历史版本的声明式分区，功能增强如下：
 
@@ -2129,7 +2129,7 @@ group by不包含分区键，也可以进行聚合计算，但是必须在稍后
 
 
 
-# 参考
+## 参考
 
 《PostgreSQL修炼之道》
 

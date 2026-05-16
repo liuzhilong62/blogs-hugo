@@ -5,7 +5,7 @@ categories: [PostgreSQL案例]
 description: "分析添加索引后性能反而下降的案例：新建索引导致优化器选择不同执行路径，配合generic plan缓存使analyze无法更新已缓存的错误计划"
 ---
 
-# 问题现象
+## 问题现象
 
 前晚添加索引，第二天早上cpu打爆，sql容易定位，问题sql就1条。该sql跑了30多s，但是昨天跑3s左右，所以要看下前后执行计划变化。
 
@@ -90,7 +90,7 @@ created_date时间范围，找1年的数据，前晚变更加的索引是created
 
 
 
-# 问题定位
+## 问题定位
 
 从3个问题来带入分析定位：
 
@@ -100,7 +100,7 @@ created_date时间范围，找1年的数据，前晚变更加的索引是created
 
 
 
-## 为什么优化人员建议了created_date索引？
+### 为什么优化人员建议了created_date索引？
 
 如果直接把pg日志中参数回填到sql文本，执行计划其实是好的那一个，也就是跑3s的走task_no索引的plan。优化人员也这么跑了，发现还可以。但是生产环境却不是这个执行计划。
 
@@ -189,7 +189,7 @@ custom_plans    | 5
 
 
 
-## 为什么新的执行计划执行时间很长但预估rows很小？
+### 为什么新的执行计划执行时间很长但预估rows很小？
 
 故障执行计划有个问题，预估的cost太小，rows太少
 
@@ -299,9 +299,9 @@ idx_lzltab_202501_created_date on lzltab_202501 cc_1  (cost=0.43..1450.59 rows=8
 
 
 
-# 问题总结
+## 问题总结
 
-## 为什么要有generic plan以及软解析的问题
+### 为什么要有generic plan以及软解析的问题
 
 把generic plan看成是DEFAULT estimate plan还更容易理解一点
 
@@ -335,7 +335,7 @@ generic plan是为了减少硬解析，即使用软解析
 
 
 
-## generic plan预估不准的问题分类
+### generic plan预估不准的问题分类
 
 因为要5次对比，所以generic plan的问题可以分为2种：
 
@@ -344,7 +344,7 @@ generic plan是为了减少硬解析，即使用软解析
 
 
 
-## 优化方案
+### 优化方案
 
 
 

@@ -5,11 +5,11 @@ categories: [PostgreSQL案例]
 description: "分析planning time超长（近1秒）和planning shared hit超100万的问题，根因是pg_statistic表膨胀导致CatCacheMiss时缓存了大量死元组数据"
 ---
 
-# 问题分析概述
+## 问题分析概述
 库总是OOM，分析到是执行计划生成有问题，planning time 1秒，planning shared hit 100w。一通分析，定位到是统计信息基表pg_statistic膨胀，由于会话首次SQL执行时的CatCacheMiss，导致backend访问并缓存了pg_statistic过多的死元组数据。应用连接总会启用新会话，多个backend的总内存过大从而导致OOM。
 
 下面是详细分析过程。
-# 问题现象
+## 问题现象
 某库反复OOM和重启。经过一通问题排查，发现会话连接数不多，但是每个会话的内存占用比较高，总内存超过内存cg限制导致OOM。
 初步可以排除以下原因：
  - 不是元数据过多的问题导致。对象过多（一般是分区数太多）会导致会话缓存过多的元数据。这个库的对象不算多
@@ -32,8 +32,8 @@ description: "分析planning time超长（近1秒）和planning shared hit超100
 ```
 再执行一次sql，planning time就正常了。
 
-# 问题定位过程
-## 打印执行计划的stat信息
+## 问题定位过程
+### 打印执行计划的stat信息
 把会话的执行计划各阶段的stat信息打到日志：
 ```sql
 set log_parser_stats   =on;
@@ -87,7 +87,7 @@ set log_executor_stats   =on;
 ```
 planner阶段内存使用率暴涨，elapsed time也暴涨。这部分信息可以定位到是整个planning阶段中的planner阶段有问题。其他可用信息不多。
 
-## strace追踪
+### strace追踪
 ```shell
 strace -p 76419
 ```
@@ -149,10 +149,10 @@ From database "lzldb":
 ```
 这些对象都不大，看上去不像这些表（or索引）过大导致的。
 
-## perf
+### perf
 （图不好贴自行脑补）
 perf火焰图有40%的时间在`heap_hot_search_buffer`堆栈上
-## gdb
+### gdb
 以`heap_hot_search_buffe`函数为依据，经过多次gdb，打如下断点试着看看哪有问题：
 ```shell
 b relation_open
@@ -201,7 +201,7 @@ select oid,relname from pg_class where oid in (2619)
   2619 | pg_statistic
 ```
 找这个统计信息基表无可厚非，因为pg在生成可能的执行计划s时需要用到统计信息来估算代价。
-## pg_statistic的膨胀
+### pg_statistic的膨胀
 定位到pg_statistic，那么看下pg_statistic表的情况
 ```sql
 >  \dt+ pg_statistic
@@ -271,11 +271,11 @@ bt
  Execution Time: 1035.802 ms
  ```
 通过索引访问10条pg_statistic数据，shared hit有100w，跟SQL的100w planning shared hit差不多。（注意这里的 Planning Time很少，说明我们没有在生成执行计划阶段出问题）
-## 索引dead tuple
+### 索引dead tuple
 如果vacuum没有真的“跑起来”，那么索引的dead tuple还是会指向死元组
 参考[从很慢的唯一索引扫描到索引膨胀](https://blog.csdn.net/qq_40687433/article/details/137368881?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522172420012616800225589534%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=172420012616800225589534&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-137368881-null-null.nonecase&utm_term=%E8%86%A8%E8%83%80&spm=1018.2226.3001.4450)
 ![image.png](/img/csdn/16f28ad1a331.png)
-## autovacuum未回收死元组
+### autovacuum未回收死元组
 表膨胀这么大，autovacuum不应该回收吗？
 ```
 select * from pg_stat_all_tables where relname='pg_statistic'\gx
@@ -333,7 +333,7 @@ select * from pg_replication_slots;
 ```
 slot的`catalog_xmin=119329380`，与vacuum展示的`oldest xmin: 119329380`一致。
 `active=f`说明复制链路已经挂了。
-## 修复问题
+### 修复问题
 把复制槽删除：
 ```sql
 select pg_drop_replication_slot('slotslotlostname');
@@ -343,7 +343,7 @@ select pg_drop_replication_slot('slotslotlostname');
 手动vacuum或再等待1分钟autovacuum。
 最后再开一个全新的会话测试一下恢复没有：
 ```sql
-# psql
+## psql
 psql (13.2)
 Type "help" for help.
 
@@ -362,6 +362,6 @@ You are now connected to database "lzldb" as user "postgres".
  Execution Time: 0.098 ms
 ```
 耗时从1s下降到10ms，Planning shared hit从100w下降到2k，问题基本解决。
-# 案例总结
+## 案例总结
 复制链路挂掉，复制槽未及时清理，导致pg_statistic统计信息基表膨胀，导致每个backend在首次加载统计信息时都非常缓慢且读取多余的page到本地缓存，导致每个backend的缓存都大于正常水平（2g左右），多个backend导致最后的OOM。
 其实问题很简单，只是过程比较曲折···简言之：基表pg_statistic膨胀导致执行计划生成阶段访问数据过大。元数据基表膨胀其实还有其他棘手的问题，有缘再见了。

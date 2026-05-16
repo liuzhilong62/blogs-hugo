@@ -9,8 +9,8 @@ description: "深入剖析PostgreSQL CLOG文件结构与事务状态存储原理
 
 放眼所有关系型数据库，PostgreSQL的clog也是很特殊的日志。CLOG的存在跟PG的MVCC机制不无关系。一些事务ID、clog的基础知识本篇不会涉及，感谢兴趣的可参考[clog和hintbits](https://blog.csdn.net/qq_40687433/article/details/130782857?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522172343394916800211586382%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=172343394916800211586382&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-130782857-null-null.nonecase&utm_term=clog&spm=1018.2226.3001.4450)。本篇主要讲clog文件的构成、手工定位事务状态、clog的wal日志同步机制，以进一步理解PostgreSQL的clog。
 
-# clog segment
-## clog目录
+## clog segment
+### clog目录
 为了区别普通日志，PG 10对clog和wal的目录进行了重命名[^3]：
 |pg9.6|pg10|
 |--|--|
@@ -19,7 +19,7 @@ description: "深入剖析PostgreSQL CLOG文件结构与事务状态存储原理
 
 别搞错了，我也有段时间被pg_xlog和pg_xact给困扰···
 
-## clog segment name
+### clog segment name
 clog也是由slru管理，clog文件命名也在`slru.c`中
 ```c
 #define SlruFileName(ctl, path, seg) \
@@ -34,12 +34,12 @@ clog文件名示例如下：
 ...
 ```
 
-# TransactionID与clog位置的转换
+## TransactionID与clog位置的转换
 
 clog只存储事务ID的状态，不存事务ID本身。通过TransactionID本身是可以直接定位到clog文件及文件中的位置的。在此之前我们需要了解一些基础知识。
 
 
-## CLOG保存的事务状态
+### CLOG保存的事务状态
 事务的状态只有4种：
 ```c
 typedef int XidStatus;
@@ -70,7 +70,7 @@ typedef int XidStatus;
  - 1个bytes有4个事务状态
  - 1个事务状态占2 bit
 
-## clog segment/page/bytes的转换
+### clog segment/page/bytes的转换
 事务id对应在哪个CLOG段不太好找，它藏在注释里：
 ```c
  * Note: because TransactionIds are 32 bits and wrap around at 0xFFFFFFFF,
@@ -95,7 +95,7 @@ typedef int XidStatus;
 ```
 
 
-## clog bit位的转换
+### clog bit位的转换
 设置clog bit和获取clog bit的函数（对应`TransactionIdSetStatusBit`和`TransactionIdGetStatus`）都有以下代码以获取事务id对应到clog中的哪两位bit：
 ```c
 	int			bshift = TransactionIdToBIndex(xid) * CLOG_BITS_PER_XACT;
@@ -119,7 +119,7 @@ so，计算在一个byte中事务id状态的位置：
 
 
 
-## 手动计算事务id在clog文件中的位置
+### 手动计算事务id在clog文件中的位置
 如果我们要手工通过`hexdump`定位CLOG中的事务，需要计算出三个元素<**CLOG的段号、段中的偏移量in bytes、byte上的偏移量in bitindex**>。（这里参考了《PostgreSQL数据库内核分析》的说法，不过有一些区别[^1]）
 
 计算之前还需要了解：
@@ -173,7 +173,7 @@ cd pg_xact/
  xid%4=3时，取第1、2位，所以这个回滚的事务的bit位取10，10代表`TRANSACTION_STATUS_ABORTED`
 
 
-## 为什么clog中一般有很多55和U？
+### 为什么clog中一般有很多55和U？
 一般的业务事务库clog文件，直接hexdump的话结果就像下面这样：
 ```c
 hexdump -C 0001 -v|head -10
@@ -195,7 +195,7 @@ hexdump -C 0001 -v|head -10
 
 
 
-# shared clog  buffer
+## shared clog  buffer
 clog shared buffers的个数很容易理解：
 ```c
 /*
@@ -263,9 +263,9 @@ SimpleLruShmemSize(int nslots, int nlsns)
 slrus用一些数组保存slru的元数据和控制信息，sz大小都是`数据类型*buffer个数`，这些大致估算都不是特别不大。主要初始化的内存还是`BLCKSZ * nslots`，也就是`8k * (4~128)=(32k~1M)`大小。所以可以*粗略的*认为，shared clog buffer的大小为1M左右。  
 
 
-# CLOG的wal：类型、写入和redo
+## CLOG的wal：类型、写入和redo
 写clog的时候会写clog的wal日志吗？如果写了那不是clog丢了也可以通过wal日志再次应用就应该找回了事务状态？我们带着问题来看clog写wal和redo的源码。
-## extend clog
+### extend clog
 `ZeroCLOGPage`会写wal，`ZeroCLOGPage(pageno, true)`实际上*仅*由`ExtendCLOG`调用：
 ```c
 /*
@@ -334,7 +334,7 @@ hexdump 03C2
 001c000
 ```
 
-## truncate clog
+### truncate clog
 
 除了extend clog外，还有truncate clog，truncate clog会在vacuum期间被调用，调用时会写truncate clog的wal record，并将wal record flush到磁盘  
 ```c
@@ -457,7 +457,7 @@ clog redo routine所做的事：
 
 
 
-## clog的同步小结
+### clog的同步小结
 CLOG只有两种wal日志，两种都不包含事务状态信息，且仅仅是在extend clog page和truncate clog segment时触发，写入的wal record只是一个clog page编号。
 CLOG的wal日志RMGR类型只有一种`RM_CLOG_ID`，这种类型只有两种信息：`CLOG_ZEROPAGE`、`CLOG_TRUNCATE`。
 ```c
@@ -473,7 +473,7 @@ clog wal同步总结：
 
 
 
-# 事务id的wal：类型、写入和redo
+## 事务id的wal：类型、写入和redo
 rmgr=clog的wal不包含事务状态，难道从库不同步clog事务信息？并不是，wal日志中有事务ID的状态信息，clog也会被更新：
 ```sql
 --回滚一个事务，提交一个事务
@@ -599,13 +599,13 @@ Num     Type           Disp Enb Address            What
 可以命中断点`TransactionIdAsyncCommitTree `，并且`xid=1818665`，也就是刚才在源库提交的事务ID。说明刚才肉眼看的代码逻辑没有问题。
 so，**standby库的clog事务ID状态由wal rmgr=Transaction来同步**
 
-# 总结
+## 总结
  - clog只存储了事务ID的状态，没有存储事务ID本身
  - 可以通过事务ID手动定位到CLOG文件中的事务状态
  - rmgr=clog的wal只有扩展和清理clog文件，没有更新事务状态
  - rmgr=transaction的wal会更新clog的事务状态
 
-# references
+## references
 [^2]:  阎书利 PostgreSQL的CLOG解析 <https://www.modb.pro/db/606433>
 [^1]: 《PostgreSQL数据库内核分析》第7章 p380-390
 [^3]:  《快速掌握PostgreSQL版本新特性》p24

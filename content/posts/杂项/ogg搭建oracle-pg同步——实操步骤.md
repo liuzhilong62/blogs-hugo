@@ -424,9 +424,9 @@ EXTRACT     RUNNING     EXTECS      00:00:00      00:00:01
 
 [pgsql@szgtsp428-or ~]$ vi .bash_profile
 
-# .bash_profile
+## .bash_profile
 
-# Get the aliases and functions
+## Get the aliases and functions
 
 if [ -f ~/.bashrc ]; then
 
@@ -434,7 +434,7 @@ if [ -f ~/.bashrc ]; then
 
 fi
 
-# User specific environment and startup programs
+## User specific environment and startup programs
 
 PATH=$PATH:$HOME/bin
 

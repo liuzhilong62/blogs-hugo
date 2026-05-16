@@ -5,7 +5,7 @@ categories: [PostgreSQL案例]
 description: "分析UPDATE报错too many range table entries而SELECT正常的原因，通过源码定位到UPDATE触发所有分区参与plan导致range table条目超出上限"
 ---
 
-# 问题现象
+## 问题现象
 postgresql中update执行语句报错`too many range table entries`	
 源sql
 ```sql
@@ -55,7 +55,7 @@ explain卡了18秒，然后报错
 
 
 
-# 源码分析
+## 源码分析
 
 报错直接抛出了源码的位置`LOCATION:  add_rte_to_flat_rtable, setrefs.c:451
 `，直接找到该源码
@@ -142,7 +142,7 @@ errmsg()就是第451行。add_rte_to_flat_rtable()看注释跟RTE有关，什么
  */
  ```
  简单的说，RTE是执行计划中的“表”，可以是具体的表也可以是生成类的“表”，比如子查询、join结果等等。RTE超出限制65000，也就是说执行计划中生成了太多的RTE。
-# 查看update的执行计划
+## 查看update的执行计划
 由于我们知道了RTE的啥，所以查看sql的执行计划可能会有所帮助。但是由于源sql（400个分区）没有生成执行计划，我们创建一个30个分区的表，期待它能explain出来，然后观察它的执行计划。
 30个分区的表执行相同的update语句
 ```sql
@@ -229,7 +229,7 @@ select  STATUS ,FILE_ID ,DATE_UPDATED  from lzl where id in ( select id from t);
 原因分析的差不多了，但是select和update的执行计划差别很大，仍然感到疑惑。下面横向对比oracle和mysql的执行计划，看看有什么差别。
 
 
-## ORACLE的行为
+### ORACLE的行为
 oracle库创建分区表，并使用本地索引
 ```sql
 CREATE TABLE lzl (
@@ -264,7 +264,7 @@ where id in (select id from lzl where id=8723 and rownum<= 100)
 oracle里，select和update都使用了nest loop，访问所有分区partition range all，所以oracle无论是select和update，t表为驱动表，因为是in所以结果进行了排序去重，所以oracle的执行计划不是30\*30次访问，而是跟驱动表里的结果集有关，如果是n条数据，那么访问n\*30次分区。因为驱动表t没有什么数据，所以这个执行计划没什么问题。
 
 
-## mysql的行为
+### mysql的行为
 因为mysql只支持本地索引，所以直接建主键就行了
 ```sql
 CREATE TABLE test (
@@ -311,17 +311,17 @@ update的执行计划：
 mysql的2个执行计划都一致。但是执行计划驱动表选择有问题，const的应该为驱动表扫描次数会更少。
 
 
-# BUG?
-## bug描述
+## BUG?
+### bug描述
 <https://postgrespro.com/list/thread-id/2482006>
 通过报错很容易就能搜到这个bug。这个bug还是德哥在2020年提交的，后面是两个源码大佬对这个bug的讨论，讨论内容比较长，总结一下：pg并不支持无限制的分区表，这在真实世界中也是能理解的，如果分区过多性能可能会急速下降。但是社区还是认为需要调整这个限制，并对源码中的`INNER_VAR`、`Var.varno`等进行了讨论。
-## 误导性
+### 误导性
 这个bug标题有一定的误导性，*BUG #16302: too many range table entries - when count partition table(65538 childs)*
 bug看上去说分区表的分区不能超过65538个，在讨论中也有*PG can handle up to 64K relations in a query*，一个查询不能有超过64K的relation。
 这个就很奇怪，因为我这里的表是400个分区，然后就抛出报错了。实际上上面两个描述不太准确。因为64K的限制指的是执行计划中“表”，不全等于真实的表。当然如果表或者分区已经超过这个数，那么当然会有问题。但是如果没有超过64K，也可能是有问题的，就像我这里的案例一样，它只有400个分区。
 
 
-## 修复
+### 修复
 bug提交的是12.2版本，我的环境是13.2版本的。
 这个bug在pg15中修复，`src/include/nodes/primnodes.h`源码跟之前不一样了
 ```c
@@ -336,7 +336,7 @@ bug提交的是12.2版本，我的环境是13.2版本的。
 而在抛出报错的函数中，`src/backend/optimizer/plan/setrefs.c`中的`add_rte_to_flat_rtable()`函数中的报错代码已经被删除了！整个15的源码都没有`too many range table entries`！
 
 
-# 总结
+## 总结
 
  - pg对于分区表的优化还有提升空间。pg对于分区表的分区，跟oracle、mysql不一样，它仍然子分区当成普通表来处理，而oracle只是把子分区当成一个段来处理，跟表是有差别的。这也导致pg在生产分区表执行计划时把每一个分区的访问方式都写了出来（在不会裁剪的情况下），分区特别多时执行计划会非常的长；而oracle只需要写`partition range all`就行了；mysql也会打印所有分区，但是不会像pg那样把每个分区的访问当成一个子查询，从而降低了执行计划的复杂度。
  - 即使分区没有达到64K，也可能报错`too many range table entries`。这个限制其实是执行计划RTE个数，而不是分区个数（当然分区达到这个数，RTE也到达了，就像上面说的，pg打印了所有分区的访问方式）

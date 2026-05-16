@@ -5,13 +5,13 @@ categories: [PostgreSQL案例]
 description: "分析执行计划选择错误索引的根因：月末统计信息过旧导致谓词越界，配合prepare statement缓存使analyze后执行计划仍不更新"
 ---
 
-# 现象
+## 现象
 案例：执行计划发生变化，plan选择了错误的索引，sql由毫秒级变成秒级。后面收集统计信息后，业务sql还是慢，最后通过删除DAILY_DATE时间索引建立(DAILY_DATE,A_ID)组合索引才解决。
 疑问：
 1. 优化器为什么选择DAILY_DATE索引，而不是选择率更好的A_ID索引？
 2. 收集统计信息后为什么没有效果？
 
-# 统计信息过旧
+## 统计信息过旧
 ```sql
 --简化后的sql
 select
@@ -67,7 +67,7 @@ most_common_freqs      | {0.0481,0.047766667,0.0466,0.0449,0.0441,0.043833334,0.
 触发阈值默认是0.1，数据变化达到1/10的时候才会触发自动analyze。这是一个月分区，数据是每天插入和更新的，月初时1天写入200w数据，因为数据存量少，会触发多次analyze（threshold默认50可以忽略不记），而在月末时，比如23日，1天写入200w数据，不会触发analyze，因为只写了1/23。这个场景中插入后还会更新，插入200w更新200w，所以23日的数据变化是1/11左右，刚好不会触发analyze，**这也能解释前20天运行稳定**。
 另外，因为数据量的变化阈值是一个比例，每天的数据量的变化只要是比较均匀的，都会有这个月末统计信息不准的问题！
 
-# 执行计划缓存
+## 执行计划缓存
 因为是统计信息过旧问题，手动收集统计信息理应解决这个问题，实际上收集了以后业务sql还是慢。
 analyze了以后，手动explain analyze 执行计划却是正确的。
 说明analyze应该是有用的，但是没有影响到业务会话。由于sql执行用的是长会话，怀疑jdbc中使用prepare statement缓存执行计划（[jdbc prepare statement](https://jenkov.com/tutorials/jdbc/preparedstatement.html#:~:text=JDBC%20PreparedStatement%201%20Creating%20a%20PreparedStatement%20Before%20you,Reusing%20a%20PreparedStatement%20...%205%20PreparedStatement%20Performance%20)）。
@@ -78,7 +78,7 @@ prepare statement会生产一个通用执行计划（generic plan），由于统
 
 
 
-# prepare statement的特性
+## prepare statement的特性
 psql支持prepare statement，由`plan_cache_mode`参数控制
  - `auto`：默认，五次机制处理
  - `force_custom_plan`：永远进行硬解析，生成custom plan
@@ -97,7 +97,7 @@ deallocate plan1|all;  --使prepare失效，断开会话也可以
 select * from pg_prepared_statements;
 ```
 
-## generic plan是怎么生成的
+### generic plan是怎么生成的
 正常来说prepare语句跑5次是可以生成generic plan的。网上很多演示，这里就不演示正常情况了，以下是我测试出的“神奇”现象
 ```sql
 --准备数据
@@ -301,7 +301,7 @@ To build a generic, parameter-value-independent plan, pass NULL for
 
 
 
-## prepare statement的失效
+### prepare statement的失效
 除了DDL、deallocate、断开会话，收集统计信息也会让prepared statement，不过这是pg14的特性。
 pg13:
 
@@ -351,7 +351,7 @@ ANALYZE
 (6 rows)
 ```
 
-## jdbc的prepare statement
+### jdbc的prepare statement
 prepare statement不是PG的独有功能，一些数据库也有相关的预解析特性，比如oracle也可以实现类似的功能。
 [jdbc](https://jenkov.com/tutorials/jdbc/preparedstatement.html#:~:text=JDBC%20PreparedStatement%201%20Creating%20a%20PreparedStatement%20Before%20you,Reusing%20a%20PreparedStatement%20...%205%20PreparedStatement%20Performance%20)自身也可以调用数据库的预解析接口，直接显示使用 prepare statement。
 jdbc参考配置：
@@ -363,7 +363,7 @@ PreparedStatement preparedStatement =
 ```
 
 
-# 建议
+## 建议
 1. 调小表级的`autovacuum_analyze_scale_factor=0.02`（why 0.02？0.02<1/31)。因为是边写边查，手动收集不太好定时间，调小`autovacuum_analyze_scale_factor`只能减缓这个问题。
 2. 考虑去掉jdbc中的prepare设置，或者设置`force_custom_plan`
 3. 调整sql逻辑

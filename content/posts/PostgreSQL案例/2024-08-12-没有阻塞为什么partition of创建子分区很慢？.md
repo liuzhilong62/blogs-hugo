@@ -6,7 +6,7 @@ description: "分析partition of创建子分区耗时35分钟的根因：default
 ---
 
 
-### create table.. partition of语句慢分析
+#### create table.. partition of语句慢分析
 ```sql
 2024-05-16 22:02:59.063 CST,"user1","dblzl",125889,"30.88.79.3:37423",66461213.1ebc1,2,"authentication",2024-05-16 22:02:59 CST,34/41364668,0,LOG,00000,"connection authorized: user=user1 database=dblzl",,,,,,,,,"","client backend"
 2024-05-16 22:02:59.079 CST,"user1","dblzl",125889,"30.88.79.3:37423",66461213.1ebc1,3,"idle",2024-05-16 22:02:59 CST,34/41364669,0,LOG,00000,"statement:  -- a86fae372f73414bbe1af18213a47beb
@@ -80,7 +80,7 @@ LOCATION:  check_default_partition_contents, partbounds.c:3227
 分区表新增子分区时，由于建分区的语句需要校验default分区中的数据，保证新分区数据范围与default分区的现有数据不冲突，导致`create table partition of`读取了大量的default分区数据，新建分区一直未完成。随后阻塞扩大，业务数据无法查询和写入。
 
 
-### 小结和建议
+#### 小结和建议
 postgresql分区表使用的越来越多了，维护分区还有很多需要注意的知识点，推荐看下[PostgreSQL分区表](https://blog.csdn.net/qq_40687433/article/details/132525655?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171591065916800225570929%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=171591065916800225570929&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-132525655-null-null.nonecase&utm_term=%E5%88%86%E5%8C%BA%E8%A1%A8&spm=1018.2226.3001.4450)，几乎面面俱到。
 
 在这个案例中，改造关键在于default分区的数据。在default改造前，不要使用partition of方式创建子分区。

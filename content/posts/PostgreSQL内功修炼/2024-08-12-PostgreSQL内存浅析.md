@@ -6,7 +6,7 @@ description: "详解PostgreSQL共享内存体系结构，涵盖shared_buffer、w
 ---
 
 
-# 体系结构
+## 体系结构
 
 ![Shared Memory in PostgreSQL](/img/csdn/8ca0ab97a875.png)
 （https://www.postgresql.fastware.com/blog/lets-get-back-to-basics-postgresql-memory-components）
@@ -17,9 +17,9 @@ description: "详解PostgreSQL共享内存体系结构，涵盖shared_buffer、w
 
 
 
-# 共享内存
+## 共享内存
 
-## linux的共享内存实现
+### linux的共享内存实现
 
 ![在这里插入图片描述](/img/csdn/026fc1403eb5.png)
 
@@ -40,7 +40,7 @@ map file 到一个进程的地址空间使用的是`mmap()`，匿名内存也可
 
 
 
-## pg中的共享内存
+### pg中的共享内存
 
 ![在这里插入图片描述](/img/csdn/0a37e863fe80.png)
 <https://www.interdb.jp/pg/pgsql02.html>
@@ -61,7 +61,7 @@ PostgreSQL 将表中的页面和索引从持久存储加载到该区域，并直
 
 
 
-## pg的共享内存相关参数
+### pg的共享内存相关参数
 
 **`shared_buffers`**
 默认128M，建议配置为25%总内存。因为PostgreSQL的私有内存一般会占的比较多，而且依赖cache，必须给OS留足内存，所以不建议像oracle那样把SGA调到一个比较大的值（相对总内存来说）。
@@ -120,7 +120,7 @@ PostgreSQL 将表中的页面和索引从持久存储加载到该区域，并直
 
 
 
-## pg_shmem_allocations视图
+### pg_shmem_allocations视图
 
 pg_shmem_allocations是pg13开始提供的视图，可查看主要的共享内存段的分配情况，包括postgres本身和插件的。
 
@@ -190,7 +190,7 @@ InitBufferPool(void)
 
 ​	
 
-# 私有内存
+## 私有内存
 
 私有内存是pg为每个session或进程分配的内存区域，它们通常不像shared buffer那样只有一个。每个进程的私有内存是不能相互访问的。
 ![在这里插入图片描述](/img/csdn/b9b739d63ed8.png)
@@ -249,7 +249,7 @@ pg13以前，逻辑解析最多会在内存中保留4096条变更（`max_changes
 
 
 
-# xxCache
+## xxCache
 
 **xxCache也是私有内存**，例如pg会将relation的元数据缓存到relcache。在官方文档中相关描述比较少，但是PG的内存问题往往跟这个相关。
 例如catalog cache导致每个backend process都占用了很多内存而且不释放的问题，在许多环境中都出现了。这里是2016年德哥提的[关于catalog cache占用较多内存的社区邮件](https://www.postgresql.org/message-id/flat/20160708012833.1419.89062%40wrigleys.postgresql.org#20160708012833.1419.89062@wrigleys.postgresql.org)
@@ -296,7 +296,7 @@ partcache.c			--操作在relcache中的分区信息的routines
 
 
 
-## relcache
+### relcache
 
 **relcache条目数据保存了什么？**
 在`src/include/utils/rel.h`中定义relcache的条目：
@@ -745,7 +745,7 @@ RelationClose(Relation relation)
 
 
 
-## syscache/catcache
+### syscache/catcache
 
 CatCache缓存的是系统表中的Tuple，基于CatCache基础之上还有一层SysCache（KV接口），本质上可以认为CatCache和SysCache一起把系统表中的数据在内存中按照KV方式重新组织。
 syscache/catcache要更复杂一点，这里简单提炼一点容易解读的内容，主要是为了了解syscache的缓存内容和load机制。进一步的源码解读可参阅[postgreSQL源码分析——存储管理——内存管理（3）](https://blog.csdn.net/weixin_45644897/article/details/121254012)和[ PostgreSQL RelCache 和 SysCache 缓存](https://blog.japinli.top/2022/07/postgres-relcache-and-syscache/)
@@ -880,7 +880,7 @@ SearchCatCacheMiss(CatCache *cache,
 这里的假元组*negative cache entry*很精彩，将一个不存在的元组缓存在catcache中，下次再发生访问就不需要再到数据字典中找元组了，避免了无意义的多次查数据字典。
 
 
-## cache validation消息
+### cache validation消息
 
 当元组发生update或delete后，由于事务可见性规则，这些在事务结束后不可见的元组需要被告知给cache，使cache中的元组invalidated，在下次读取时再load。同样，因为insert而产生新元组时,cache中的negative cache entry也可能需要flush出去以匹配新元组。其中一个比较常见的常见是DDL，DDL可能导致元数据中的某些tuple失效，此时就需要发送cache validation给各个私有cache让他们清理cache条目。
 这个cache validation机制适用于syscache、relcache等私有cache池的管理。由于idle的backend不会读sinval events,所以需要主动send消息让lag backend能“catch up”。当完成事务时，必须要将invalidation events通过SI message queue广播给其他backends。
@@ -928,7 +928,7 @@ shared-invalidation消息包含如下种类：
 
 
 
-## xxCache的问题小结
+### xxCache的问题小结
 
 xxCache有许多种类，其中比较著名的有plancache、relcache、syscache。这些cache属于私有内存，存在于每个backend进程中。这些cache没有lru机制来淘汰过期的数据，他们通过invalidation消息清理全局都不需要的快照、元数据信息，比如对象被删除了的时候。
 
@@ -948,7 +948,7 @@ xxCache有许多种类，其中比较著名的有plancache、relcache、syscache
 
 
 
-# memory contexts
+## memory contexts
 
 PostgresSQL通过memory context机制来管理内存。之前有做过[一篇memory contexts的译文](https://blog.csdn.net/qq_40687433/article/details/134796339?spm=1001.2014.3001.5501)，大致总结如下：
 
@@ -965,7 +965,7 @@ SQL操作产生memory context的时机：
 
 
 
-## 源码分析
+### 源码分析
 
 在 PostgreSQL 中，所有内存的申请、释放和重置都是在内存上下文中进行的，因此不会直接使用 `malloc()`、`realloc()` 和 `free()` 系统调用函数，而是使用 `palloc()`、`repalloc()` 和 `pfree()` 来实现内存的分配、重分配和释放。
 
@@ -1141,7 +1141,7 @@ pfree()=>AllocSetFree()释放一个内存上下文中指定的内存片，如果
 
 
 
-## 查看mcxt内存大小
+### 查看mcxt内存大小
 
 1. pg14+：pg_backend_memory_contexts 视图直接在库内查看mcxt内存
 
@@ -1198,12 +1198,12 @@ TopMemoryContext: 97680 total in 5 blocks; 16856 free (16 chunks); 80824 used
 
 
 
-# 小结
+## 小结
 ![在这里插入图片描述](/img/csdn/cac547b38cb3.png)
 
 
 
-# references
+## references
 
 src/backend/utils/mmgr/mcxt.c
 

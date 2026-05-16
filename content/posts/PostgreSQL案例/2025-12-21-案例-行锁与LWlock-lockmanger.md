@@ -5,7 +5,7 @@ categories: [PostgreSQL案例]
 description: "分析同一行高并发更新导致大量行锁和LWLock LockManager等待的问题，通过压测验证行锁绕过fastpath机制是LWLock竞争加剧的根因"
 ---
 
-# 现象
+## 现象
 
 数据库有大量行锁和少部分LWlock lockmanger，cpu打满，活动会话飙升。锁对应的block pid在变化，未见明显长事务阻塞。
 (脑补cpu和活动会话高）
@@ -18,9 +18,9 @@ UPDATE lzl_record  SET rc_lzl1= rc_lzl1 + $1, pc_lzl2 = pc_lzl2 + $2, rc_lzl3 = 
 
 
 
-# 分析
+## 分析
 
-## SQL未见并发上涨
+### SQL未见并发上涨
 
 从hit和cpu的关联性看，可以从sql的hit分析。其中那个UPDATE sql占比80%左右，该sql的执行次数没有变化，但blks hit明显异常。
 
@@ -30,7 +30,7 @@ UPDATE lzl_record  SET rc_lzl1= rc_lzl1 + $1, pc_lzl2 = pc_lzl2 + $2, rc_lzl3 = 
 
 
 
-## LWlock lockmanager分析
+### LWlock lockmanager分析
 
 因为SQL本身简单，lzl_record表的lzl_id字段是唯一字段，也就是通过唯一键进行更新。
 
@@ -56,9 +56,9 @@ LWlock lockmanger跟没有用到fast path有关系，而简单的查询、DML可
 
 从日志上可以看到更新同一行的情况，其中一行有锁等待的更新有上万次。
 
-# 压测
+## 压测
 
-## 压测同一行更新产生LWLock LockManager
+### 压测同一行更新产生LWLock LockManager
 
 出于行锁肯定不能仅fastpath的考虑，以及LWLock LockManager会降低数据库性能的经验，压测不同场景性能情况。
 
@@ -128,7 +128,7 @@ usename  |        state        |     wait_event      | wait_event_type | cnt
 
 从等待事件上可以看出差异，更新同一行会出现LWLock LockManager甚至占比较高的情况，不同行基本都是等cpu。场景1与生产情况类似。
 
-# 行锁与fastpath浅析
+## 行锁与fastpath浅析
 
 lmgr readme对fastpath的解释：
 
@@ -238,7 +238,7 @@ fastpath=f的也就少了2、3个。2个会话持有的transactionid锁是肯定
 
 
 
-# 总结
+## 总结
 
 1.行锁是因是果，是行锁的问题还是数据库性能下降SQL跑的慢了出现行锁？
 

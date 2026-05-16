@@ -14,7 +14,7 @@ glibc问题处理：<https://www.cnblogs.com/hxlasky/p/16779047.html>
 
 
 ![img](/img/csdn/6d5467d7acac.png)
-### 1.源端创建库及表
+#### 1.源端创建库及表
 ```sql
 
 [root@node2 ~]# su - postgres
@@ -29,7 +29,7 @@ postgres=# create table tab1(id int primary key,name varchar(20))
 ```
 
 
-### 2.目标端创建库及表
+#### 2.目标端创建库及表
 ```sql
 sqlplus / as sysdba
 SQL> create table ORALZL.tab1(id number primary key,name varchar2(20));
@@ -37,7 +37,7 @@ SQL> create table ORALZL.tab1(id number primary key,name varchar2(20));
 ```
 
 
-### 3.解压安装ogg for postgresql
+#### 3.解压安装ogg for postgresql
 ```
 --跟ogg for oracle不同，ogg for pg只需要解压。for o需要跑runinstaller
 [postgres@node1 ~]$ id postgres
@@ -67,17 +67,17 @@ Archive: 19100200714_ggs_Linux_x64_PostgreSQL_64bit.zip
 ```
 
 
-### 4.pg用户环境变量配置
+#### 4.pg用户环境变量配置
 
 pg源端
 ```shell
 [postgres@node1 ~]$ cat .bash_profile
-# .bash_profile
-# Get the aliases and functions
+## .bash_profile
+## Get the aliases and functions
 if [ -f ~/.bashrc ]; then
 . ~/.bashrc
 fi
-# User specific environment and startup programs
+## User specific environment and startup programs
 PATH=$PATH:$HOME/.local/bin:$HOME/bin
 export GGHOME=/ogg
 export PG_DATA=/opt/pgsql/pgsql/bin
@@ -89,7 +89,7 @@ export DD_ODBC_HOME=/ogg
 export PATH
 [postgres@node1 ~]$ source .bash_profile
 ```
-### 5.配置管理进程
+#### 5.配置管理进程
 ```shell
 [postgres@node1 ~]$ cd /ogg
 [postgres@node1 ogg]$ ./ggsci
@@ -127,7 +127,7 @@ MANAGER   RUNNING
 ```
 
 
-### 6.源端postgresql参数调整
+#### 6.源端postgresql参数调整
 ```shell
 [postgres@node1 ogg]$ vi /opt/pgsql_data/postgresql.conf
 wal_level = logical      #minimal, replica, or logical
@@ -150,7 +150,7 @@ track_commit_timestamp=off
 
 
 
-### 7.ogg for pg数据源配置
+#### 7.ogg for pg数据源配置
 ```shell
 cd /home/postgres/
 vi odbc.ini
@@ -172,7 +172,7 @@ Password=postgres
 ```
 
 
-### 8. 连接测试
+#### 8. 连接测试
 ```shell
 [postgres@node1 ~]$ cd /ogg
 [postgres@node1 ogg]$ ./ggsci
@@ -185,7 +185,7 @@ GGSCI (node1 as postgres@pgdsn) 2>
 ```
 
 
-### 9.开启表级别附加日志
+#### 9.开启表级别附加日志
 
 源端：
 ```shell
@@ -201,7 +201,7 @@ Logging of supplemental log data is enabled for table public.t1 with REPLICA IDE
 ```
 
 
-### 10 在pg上注册抽取进程
+#### 10 在pg上注册抽取进程
 
 在pg库上注册抽取进程，实际上就是创建了一个复制槽,output plugin 默认使用test_decoding
 ```shell
@@ -209,7 +209,7 @@ Logging of supplemental log data is enabled for table public.t1 with REPLICA IDE
  2020-07-22 03:25:27 INFO  OGG-25355 Successfully created replication slot 'ext_pg_2947c06e0ea2ec74' for EXTRACT group 'EXT_PG' in database 'test'.
 ```
 
-### 11.配置抽取进程和投递进程
+#### 11.配置抽取进程和投递进程
 
 配置抽取进程
 ```shell
@@ -236,7 +236,7 @@ SETENV ( PGCLIENTENCODING = "UTF8" )
  RMTTRAIL ./dirdat/rt
  TABLE PUBLIC.TAB1;
 ```
-### 12.添加trail和启动抽取和投递
+#### 12.添加trail和启动抽取和投递
 ```shell
 ADD extract ext_pg, TRANLOG,BEGIN now
  add exttrail ./dirdat/st,extract ext_pg,megabytes 500
@@ -247,7 +247,7 @@ ADD extract ext_pg, TRANLOG,BEGIN now
 ```
 
 
-### 13 配置defgen
+#### 13 配置defgen
 
 如果表结构一直可以配置参数ASSUMETARGETDEFS
 ```shell
@@ -263,7 +263,7 @@ defgen paramfile /oggpg/dirdef/tab1.prm
 ```
 拷贝defgen文件到目标端的dirdef目录下
 
-### 14.目标端验证trail投递正常
+#### 14.目标端验证trail投递正常
 ```shell
 [oracle@lzl dirdat]$ cd dirdat
  [oracle@lzl dirdat]$ ll
@@ -272,7 +272,7 @@ defgen paramfile /oggpg/dirdef/tab1.prm
 
 
 
-### 15.在pg上注册抽取进程
+#### 15.在pg上注册抽取进程
 在pg库上注册抽取进程，实际上就是创建了一个复制槽
 ```shell
 GGSCI (node1 as postgres@pgdsn) 6> Register Extract ext_pg
@@ -280,7 +280,7 @@ GGSCI (node1 as postgres@pgdsn) 6> Register Extract ext_pg
 ```
 
 
-### 16.配置oracle用户环境变量
+#### 16.配置oracle用户环境变量
 ```shell
 export ORACLE_BASE=/oracle/app/oracle
  export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/dbhome_1
@@ -290,12 +290,12 @@ export ORACLE_BASE=/oracle/app/oracle
  export TNS_ADMIN=$ORACLE_HOME/network/admin
  export LD_LIBRARY_PATH=$ORACLE_HOME/lib:$OGG_HOME:$ORACLE_HOME/lib32:/lib/usr/lib:/usr/local/lib
 ```
-### 17.配置oracle侧的监听和tns
+#### 17.配置oracle侧的监听和tns
 ogg for oracle会默认使用TNS_ADMIN下的tns
 也可以在配置抽取的时候手动配置
 如：`USERID goldengate@127.0.0.1:1521/oralzl, PASSWORD 123456`
 
-### 18.目标端安装ogg for oracle
+#### 18.目标端安装ogg for oracle
 
 下载ogg软件
 配置oggcore.rsp文件
@@ -313,7 +313,7 @@ UNIX_GROUP_NAME=oinstall
 ```shell
 ./runInstaller -silent -nowait -responseFile /home/oracle/oggcore.rsp
 ```
-### 19 oracle库的用户和权限
+#### 19 oracle库的用户和权限
 ```shell
 create user goldengate identified by "123456";
  grant create session,alter session to goldengate;
@@ -335,7 +335,7 @@ create user goldengate identified by "123456";
  grant dba to goldengate;
  grant lock any table to goldengate;
 ```
-### 20 目标端mgr进程
+#### 20 目标端mgr进程
 ```shell
 edit param mgr
 
@@ -350,7 +350,7 @@ PORT 7809
 ```shell
 start mgr
 ```
-### 21 目标端配置复制进程
+#### 21 目标端配置复制进程
 ```shell
 GGSCI (node2) 8> dblogin userid goldengate@127.0.0.1:1521/oralzl,password 123456
 GGSCI (node2 as postgres@pgdsn) 9> add checkpointtable goldengate.chkt
@@ -368,7 +368,7 @@ add replicat rep_pg,exttrail ./dirdat/rt,checkpointtable goldengate.chkt
  start rep_pg
 ```
 
-### 22 测试同步
+#### 22 测试同步
 ```sql
 [postgres@node1 ~]$ psql
 postgres=# \c lzldb
