@@ -14,11 +14,10 @@ params:
   author:
     name: "最后的DBA"
     headline: "PostgreSQL DBA · 数据库老司机"
-    bio: "PostgreSQL DBA，关注数据库内核、案例分析、源码阅读"
+    bio: "PostgreSQL DBA，关注数据库内核、案例分析、源码阅读\n📡 微信公众号：最后的DBA"
     image: "img/avatar.jpg"
     imageQuality: 96
     links:
-      - wechat: "/wechat/"
       - github: "https://github.com/liuzhilong62"
       - x-twitter: "https://x.com/liuzhilong62"
       - csdn: "https://liuzhilong.blog.csdn.net"
