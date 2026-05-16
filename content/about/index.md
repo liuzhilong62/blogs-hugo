@@ -2,6 +2,7 @@
 title: "关于"
 layout: "page"
 showTableOfContents: false
+showReadingTime: false
 ---
 
 你好，我是 **liuzhilong62**，一名 PostgreSQL DBA。

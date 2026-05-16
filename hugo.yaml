@@ -6,9 +6,12 @@ theme: "blowfish"
 defaultContentLanguage: "zh"
 enableRobotsTXT: true
 enableEmoji: true
-summaryLength: 0
+summaryLength: 80
 pagination:
   pagerSize: 10
+
+params:
+  readingTime: 300
 
 markup:
   goldmark:
