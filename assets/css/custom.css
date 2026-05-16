@@ -1,34 +1,19 @@
-/* ===== 页面背景 ===== */
-body {
-  background-color: #f8f9fa;
-  background-image:
-    /* 顶部光晕 */
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(51, 103, 145, 0.06) 0%, transparent 60%),
-    /* 右下光晕 */
-    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.04) 0%, transparent 60%),
-    /* 几何网格 */
-    linear-gradient(rgba(51, 103, 145, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 103, 145, 0.04) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    100% 100%,
-    60px 60px,
-    60px 60px;
-  background-attachment: fixed;
+/* ===== 页面背景光晕 ===== */
+/* 只加光晕，不覆盖背景色 — 交给 Blowfish 主题管理 */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(51, 103, 145, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.03) 0%, transparent 60%);
 }
 
-/* 暗色模式 */
-[data-theme="dark"] body {
-  background-color: #0d1117;
-  background-image:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(91, 155, 213, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.04) 0%, transparent 60%),
-    linear-gradient(rgba(48, 54, 61, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(48, 54, 61, 0.3) 1px, transparent 1px);
-  background-size:
-    100% 100%,
-    100% 100%,
-    60px 60px,
-    60px 60px;
-  background-attachment: fixed;
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(91, 155, 213, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 90%, rgba(91, 155, 213, 0.03) 0%, transparent 60%);
 }
