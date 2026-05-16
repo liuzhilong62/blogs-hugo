@@ -43,7 +43,7 @@ article:
   showTaxonomies: true
   showCategories: true
   showTags: true
-  showWordCount: true
+  showWordCount: false
   showViews: false
   showLikes: false
   seriesOpened: false

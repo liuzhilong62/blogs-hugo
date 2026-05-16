@@ -20,8 +20,6 @@ params:
     links:
       - github: "https://github.com/liuzhilong62"
       - x-twitter: "https://x.com/liuzhilong62"
-      - link: "https://liuzhilong.blog.csdn.net"
-        title: "CSDN"
-      - link: "https://www.modb.pro/u/4587"
-        title: "墨天轮"
+      - csdn: "https://liuzhilong.blog.csdn.net"
+      - modb: "https://www.modb.pro/u/4587"
       - email: "mailto:liuzhilong62@outlook.com"
