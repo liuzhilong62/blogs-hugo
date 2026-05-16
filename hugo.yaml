@@ -1,7 +1,7 @@
 # ============================================================
 # Hugo + Blowfish 博客配置 — 最后的DBA
 # ============================================================
-baseURL: "https://liuzhilong62.github.io/blogs-hugo/"
+baseURL: "https://liuzhilong62.github.io/blogs/"
 theme: "blowfish"
 defaultContentLanguage: "zh"
 enableRobotsTXT: true
