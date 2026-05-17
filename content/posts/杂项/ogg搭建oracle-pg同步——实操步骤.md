@@ -2,6 +2,7 @@
 title: "ogg搭建oracle-pg同步——实操步骤"
 date: 2024-08-13
 categories: [杂项]
+description: "Oracle GoldenGate搭建Oracle到PostgreSQL同步链路的实操步骤，涵盖环境准备、OGG安装、参数配置与同步验证。"
 ---
 
 ​

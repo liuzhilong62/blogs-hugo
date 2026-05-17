@@ -1,5 +1,5 @@
 colorScheme: "ocean"
-defaultAppearance: "light"
+defaultAppearance: "auto"
 autoSwitchAppearance: true
 
 enableSearch: true
@@ -13,7 +13,7 @@ header:
   layout: "fixed"
 
 footer:
-  showMenu: false
+  showMenu: true
   showCopyright: true
   showThemeAttribution: false
   showAppearanceSwitcher: true
@@ -44,7 +44,7 @@ article:
   showTaxonomies: true
   showCategories: true
   showTags: true
-  showWordCount: false
+  showWordCount: true
   showViews: false
   showLikes: false
   showHero: false

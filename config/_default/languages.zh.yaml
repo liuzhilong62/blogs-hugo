@@ -9,7 +9,7 @@ params:
   rtl: false
   dateFormat: "2006-01-02"
   description: "PostgreSQL 数据库技术博客 — 内功修炼、案例分析、源码解析、论文解读"
-  copyright: "© 2025 liuzhilong62"
+  copyright: "© { year } liuzhilong62"
 
   author:
     name: "liuzhilong62"

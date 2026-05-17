@@ -17,23 +17,37 @@ main:
   - name: "笔记"
     pageRef: "categories/读书笔记"
     weight: 60
-  - name: "杂项"
-    pageRef: "categories/杂项"
-    weight: 70
-  - name: "面试"
-    pageRef: "categories/postgresql面试题"
-    weight: 75
-  - name: "AI"
-    pageRef: "categories/aiops"
-    weight: 78
   - name: "关于"
     pageRef: "about"
-    weight: 80
-  - name: "x-twitter"
+    weight: 70
+  - name: ""
     url: "https://x.com/liuzhilong62"
     pre: "x-twitter"
-    weight: 90
-  - name: "github"
+    title: "X / Twitter"
+    weight: 80
+  - name: ""
     url: "https://github.com/liuzhilong62"
     pre: "github"
-    weight: 100
+    title: "GitHub"
+    weight: 90
+
+footer:
+  - name: "首页"
+    pageRef: "/"
+    weight: 10
+  - name: "文章"
+    pageRef: "/posts/"
+    weight: 20
+  - name: "分类"
+    pageRef: "/categories/"
+    weight: 30
+  - name: "标签"
+    pageRef: "/tags/"
+    weight: 40
+  - name: "关于"
+    pageRef: "/about/"
+    weight: 50
+  - name: "RSS"
+    url: "/index.xml"
+    pre: "rss"
+    weight: 60
