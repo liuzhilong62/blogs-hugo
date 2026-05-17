@@ -12,24 +12,13 @@
       {{ range $title := $featuredArticles }}
         {{ range first 1 (where site.RegularPages "Title" $title) }}
           <article class="relative overflow-hidden rounded-lg border border-neutral-200 bg-white p-5 transition hover:border-primary-400 hover:shadow-sm dark:border-neutral-700 dark:bg-neutral-900">
-            {{ with .GetTerms "categories" }}
-              <div class="mb-3">
-                {{ range . }}
-                  <a class="relative" href="{{ .RelPermalink }}">
-                    {{ partial "badge.html" .LinkTitle }}
-                  </a>
-                {{ end }}
-              </div>
-            {{ end }}
             <h3 class="text-lg font-bold leading-snug text-neutral-900 dark:text-neutral">
               <a class="before:absolute before:inset-0 hover:underline hover:underline-offset-2" href="{{ .RelPermalink }}">
                 {{ .Title | emojify }}
               </a>
             </h3>
             <div class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
-              {{ .Date | time.Format site.Params.DateFormat }}
-              {{ with .ReadingTime }} · {{ . }} 分钟{{ end }}
-              {{ with .WordCount }} · {{ . }} 字{{ end }}
+              {{ partial "article-meta/basic.html" . }}
             </div>
             {{ with .Description }}
               <p class="mt-3 line-clamp-3 text-sm leading-6 text-neutral-700 dark:text-neutral-300">{{ . | plainify }}</p>
