@@ -20,16 +20,6 @@ main:
   - name: "关于"
     pageRef: "about"
     weight: 70
-  - name: "X"
-    url: "https://x.com/liuzhilong62"
-    pre: "x-twitter"
-    title: "X / Twitter"
-    weight: 80
-  - name: ""
-    url: "https://github.com/liuzhilong62"
-    pre: "github"
-    title: "GitHub"
-    weight: 90
 
 footer:
   - name: "首页"
