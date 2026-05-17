@@ -20,7 +20,7 @@ main:
   - name: "关于"
     pageRef: "about"
     weight: 70
-  - name: ""
+  - name: "X"
     url: "https://x.com/liuzhilong62"
     pre: "x-twitter"
     title: "X / Twitter"
