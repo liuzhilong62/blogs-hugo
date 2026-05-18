@@ -21,11 +21,12 @@ lastdba.com 是 PostgreSQL DBA 的技术博客，内容涵盖数据库案例、
 ## 全部文章（按分类）
 
 {{- $posts := where .Site.RegularPages "Section" "posts" }}
-{{- range $category, $_ := .Site.Taxonomies.categories }}
-### {{ $category }}
+{{- range .Site.Taxonomies.categories }}
+  {{- $cat := .Page.Title }}
+### {{ $cat }}
 
 {{- range $posts }}
-  {{- if in .Params.categories $category }}
+  {{- if in .Params.categories $cat }}
 - [{{ .Title }}]({{ .Permalink }}): {{ .Description | default .Summary | plainify | truncate 120 }}
   {{- end }}
 {{- end }}

@@ -24,6 +24,8 @@ taxonomies:
   tag: tags
   series: series
 
+preserveTaxonomyNames: true
+
 outputs:
   home: ["HTML", "RSS", "JSON", "llms", "llmsfull"]
 
