@@ -1,4 +1,4 @@
-{{- /* llms-full.txt — 全站文章完整 Markdown 内容，供 AI Agent 一次性摄入 */ -}}
+{{- /* llms-full.txt — 全站文章原始 Markdown，供 AI Agent 一次性摄入 */ -}}
 # {{ .Site.Title }}
 
 > {{ .Site.Params.description | default "PostgreSQL DBA 技术博客" }}
@@ -14,9 +14,7 @@
 > {{ .Description }}
 {{- end }}
 
-{{- if not .Date.IsZero }}
 > 发布于 {{ .Date.Format "2006-01-02" }}{{ with .Lastmod }} · 更新于 {{ .Format "2006-01-02" }}{{ end }}{{ with .ReadingTime }} · 阅读约 {{ . }} 分钟{{ end }}
-{{- end }}
 
 {{ .RawContent }}
 

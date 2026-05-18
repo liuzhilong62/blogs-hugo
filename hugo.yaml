@@ -25,7 +25,7 @@ taxonomies:
   series: series
 
 outputs:
-  home: ["HTML", "RSS", "JSON", "llms", "llms-full"]
+  home: ["HTML", "RSS", "JSON", "llms", "llmsfull"]
 
 outputFormats:
   llms:
@@ -34,7 +34,7 @@ outputFormats:
     baseName: llms
     isPlainText: true
     notAlternative: true
-  llms-full:
+  llmsfull:
     name: llmsfull
     mediaType: text/plain
     baseName: llms-full
