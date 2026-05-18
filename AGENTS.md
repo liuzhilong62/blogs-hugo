@@ -48,8 +48,7 @@ blogs/
 ├── scripts/                   # 辅助脚本 (当前为空)
 ├── themes/blowfish/           # Git submodule
 ├── .github/workflows/
-│   ├── hugo.yml               # Hugo 部署 (活跃)
-│   └── jekyll-gh-pages.yml    # Jekyll 遗留 (应删除)
+│   └── hugo.yml               # Hugo 部署
 └── AGENTS.md                  # 本文件
 ```
 
@@ -195,7 +194,7 @@ showHero: false
 
 ## 部署与 DNS
 
-- **GitHub Actions**: `.github/workflows/hugo.yml` (主), `.github/workflows/jekyll-gh-pages.yml` (遗留, 应删除)
+- **GitHub Actions**: `.github/workflows/hugo.yml`
 - **Cloudflare**: DNS 橙色云 🧡 proxy 模式, 亚太节点加速中国访问
 - **CNAME**: `static/CNAME` 文件包含 `lastdba.com`, 必须在每次部署的 `public/` 中存在, 防止 GitHub Pages 重置自定义域名
 - **Pages 设置**: Source → "GitHub Actions"
