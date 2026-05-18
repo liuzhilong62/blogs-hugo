@@ -1,0 +1,32 @@
+{{- /* llms.txt — AI agent sitemap for lastdba.com */ -}}
+# {{ .Site.Title }}
+
+> {{ .Site.Params.description | default "PostgreSQL DBA 技术博客" }}
+
+## 关于
+
+lastdba.com 是 PostgreSQL DBA 的技术博客，内容涵盖数据库案例、
+内核机制、源码解析、论文解读和读书笔记。共 {{ len (where .Site.RegularPages "Section" "posts") }} 篇文章。
+
+{{- $featured := .Site.Params.homepage.featuredArticles | default slice }}
+
+## 精选阅读
+
+{{- range $title := $featured }}
+  {{- range first 1 (where site.RegularPages "Title" $title) }}
+- [{{ .Title }}]({{ .Permalink }}): {{ .Description | default .Summary | plainify }}
+  {{- end }}
+{{- end }}
+
+## 全部文章（按分类）
+
+{{- $posts := where .Site.RegularPages "Section" "posts" }}
+{{- range $category, $_ := .Site.Taxonomies.categories }}
+### {{ $category }}
+
+{{- range $posts }}
+  {{- if in .Params.categories $category }}
+- [{{ .Title }}]({{ .Permalink }}): {{ .Description | default .Summary | plainify | truncate 120 }}
+  {{- end }}
+{{- end }}
+{{- end }}

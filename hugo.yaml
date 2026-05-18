@@ -25,7 +25,21 @@ taxonomies:
   series: series
 
 outputs:
-  home: ["HTML", "RSS", "JSON"]
+  home: ["HTML", "RSS", "JSON", "llms", "llms-full"]
+
+outputFormats:
+  llms:
+    name: llms
+    mediaType: text/plain
+    baseName: llms
+    isPlainText: true
+    notAlternative: true
+  llms-full:
+    name: llmsfull
+    mediaType: text/plain
+    baseName: llms-full
+    isPlainText: true
+    notAlternative: true
 
 imaging:
   anchor: Center

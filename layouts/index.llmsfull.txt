@@ -1,0 +1,25 @@
+{{- /* llms-full.txt — 全站文章完整 Markdown 内容，供 AI Agent 一次性摄入 */ -}}
+# {{ .Site.Title }}
+
+> {{ .Site.Params.description | default "PostgreSQL DBA 技术博客" }}
+> 共 {{ len (where .Site.RegularPages "Section" "posts") }} 篇文章
+> 生成时间：{{ now.Format "2006-01-02 15:04:05" }}
+
+---
+
+{{- range (where .Site.RegularPages "Section" "posts") }}
+# {{ .Title }}
+
+{{- if .Description }}
+> {{ .Description }}
+{{- end }}
+
+{{- if not .Date.IsZero }}
+> 发布于 {{ .Date.Format "2006-01-02" }}{{ with .Lastmod }} · 更新于 {{ .Format "2006-01-02" }}{{ end }}{{ with .ReadingTime }} · 阅读约 {{ . }} 分钟{{ end }}
+{{- end }}
+
+{{ .RawContent }}
+
+---
+
+{{- end }}
