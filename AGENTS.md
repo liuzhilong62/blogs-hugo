@@ -175,6 +175,9 @@ showHero: false
 
 | 文件 | 用途 |
 |------|------|
+| `layouts/_default/rss.xml` | **RSS 全文输出** — 添加 `<content:encoded>` 供 agent 和 RSS 阅读器消费 |
+| `layouts/index.llms.txt` | **AI agent 站点地图** — 纯文本文章索引 (按分类)，供 agent 快速发现 |
+| `layouts/index.llmsfull.txt` | **AI agent 全文** — 全站 Markdown 原文，供 agent 一次性摄入 |
 | `layouts/_default/_markup/render-image.html` | **图片路径转换** — PicGo raw URL → `/img/`, Typora 本地路径 → `/img/` |
 | `layouts/partials/custom-head.html` | favicon 多重声明 (覆盖 Blowfish 默认鱼图标) |
 | `layouts/partials/article-link/card.html` | 首页文章卡片 — 用 `description` 替代自动摘要 |
