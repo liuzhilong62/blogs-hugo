@@ -1,0 +1,222 @@
+# AGENTS.md — 最后的DBA (lastdba.com)
+
+为 AI coding agent 准备的工程指引。读完此文件即可独立完成该博客项目的开发维护工作。
+
+## 项目概览
+
+- **博客名**: 最后的DBA
+- **域名**: https://lastdba.com
+- **作者**: liuzhilong62
+- **技术栈**: Hugo 0.161.1 + Blowfish 主题 (Git submodule)
+- **托管**: GitHub Pages + Cloudflare CDN (橙色云 🧡)
+- **本地编辑**: Typora (macOS) + PicGo (图片上传)
+- **内容**: 77+ 篇 PostgreSQL 技术文章，中文写作
+- **目录**: `/Users/liuzhilong62/Documents/01-mygithub/blogs`
+
+## 目录结构
+
+```
+blogs/
+├── hugo.yaml                  # 核心 Hugo 配置
+├── config/_default/
+│   ├── params.yaml            # Blowfish 主题参数
+│   ├── languages.zh.yaml      # 中文语言配置 + 作者信息 + 社交链接
+│   └── menus.zh.yaml          # 导航菜单 (flat, 无 dropdown)
+├── content/
+│   ├── _index.md              # 首页 (profile layout + 统计短代码)
+│   ├── about/index.md         # 关于页
+│   └── posts/
+│       ├── PostgreSQL案例/     # 22 篇
+│       ├── PostgreSQL内功修炼/  # 15 篇
+│       ├── PostgreSQL源码解析/  # 5 篇
+│       ├── PostgreSQL面试题/    # 1 篇
+│       ├── 论文解读/            # 4 篇
+│       ├── 读书笔记/            # 15 篇
+│       ├── AIOps/              # 1 篇
+│       └── 杂项/               # 14 篇 (年终总结等)
+├── assets/
+│   ├── css/custom.css         # 自定义样式 (当前为空, 尽量不用)
+│   ├── icons/csdn.svg         # CSDN 自定义图标
+│   ├── icons/modb.svg         # 墨天轮自定义图标
+│   └── img/avatar.jpg         # 头像
+├── static/
+│   ├── CNAME                  # lastdba.com (防止 GitHub Pages 重置)
+│   ├── favicon.ico / favicon-*.png / apple-touch-icon.png
+│   └── img/                   # 文章图片 (764 张, 251MB)
+│       └── csdn/              # 从 CSDN 下载的防盗链图片 (gitignored)
+├── layouts/                   # 自定义模板覆盖 (见下文清单)
+├── scripts/                   # 辅助脚本 (当前为空)
+├── themes/blowfish/           # Git submodule
+├── .github/workflows/
+│   ├── hugo.yml               # Hugo 部署 (活跃)
+│   └── jekyll-gh-pages.yml    # Jekyll 遗留 (应删除)
+└── AGENTS.md                  # 本文件
+```
+
+## 核心命令
+
+```bash
+# 本地开发
+hugo server -D --bind 0.0.0.0 --port 1313
+
+# 构建 (CI 用 --minify, 本地可省略)
+hugo --minify
+
+# 创建新文章 (单文件格式, 与现有 78 篇一致)
+hugo new posts/PostgreSQL案例/my-new-post.md
+
+# 部署 (编辑完成后自动执行)
+hugo --quiet && git add -A && git commit -m "描述" && git push
+```
+
+**push 即部署**: GitHub Actions 自动触发 hugo.yml, ~1 分钟后刷新到 lastdba.com。
+
+## 写文章工作流
+
+### 1. 创建文章
+
+```bash
+hugo new posts/分类目录/slug.md
+```
+
+文章放在对应分类的子目录下，使用单 `.md` 文件格式（与现有 78 篇一致）。
+
+### 2. 编辑内容
+
+用 Typora 编辑。遵循写作规范：
+
+```
+# 问题现象
+...现象描述...
+
+# 问题分析
+...分析过程...
+
+## 源码分析
+...代码块 + 解释...
+
+## 测试验证
+...测试结果...
+
+# 总结
+...要点总结...
+```
+
+- 代码块必须指定语言: ` ```sql `, ` ```shell `, ` ```c `
+- 短句为主, 口语化技术中文 (如 "库挂了" 而非 "数据库实例异常终止")
+- 标题用 `##` 起步 (h1 是文章标题, TOC 不渲染 h1)
+
+### 3. 插入图片 (PicGo + Typora)
+
+**重要**: Typora macOS 版会写绝对路径, 这是已知问题。图片插入流程:
+
+1. Typora 中粘贴图片 → PicGo 自动上传到 GitHub
+2. PicGo 生成 `https://raw.githubusercontent.com/liuzhilong62/blogs/main/static/img/xxx.png`
+3. Hugo render hook (`layouts/_default/_markup/render-image.html`) 构建时自动转换为 `/img/xxx.png`
+
+**不要手动修改图片路径**。render hook 处理一切。
+
+PicGo 配置 (参考, 不要改动):
+- 仓库: `liuzhilong62/blogs`
+- 分支: `main`
+- 路径: `static/img/`
+- customUrl: 空 (使用 raw GitHub URL)
+
+### 4. 发布
+
+```bash
+hugo --quiet && git add -A && git commit -m "post: 标题" && git push
+```
+
+**不要等用户说 "继续"** — 编辑完文件后直接 push。push 触发 CI 自动部署。
+
+## Frontmatter 规范
+
+```yaml
+---
+title: "文章标题"
+date: 2026-05-18
+draft: false
+categories: ["PostgreSQL案例"]
+tags: ["PostgreSQL", "性能", "索引"]
+description: "20-60 字的中文摘要，用于首页卡片和搜索结果"
+showHero: false
+---
+```
+
+- `categories`: 必须是以下之一 —
+  `PostgreSQL案例`, `PostgreSQL内功修炼`, `PostgreSQL源码解析`, `PostgreSQL面试题`, `论文解读`, `读书笔记`, `AIOps`, `杂项`
+- `description`: 必填, 20-60 字中文。用于首页卡片 (card.html) 和分类页 (simple.html) 的摘要显示
+- `showHero`: 默认 false。hero 背景被用户否决过, 不要开启
+- `draft: true` 的文章不会发布, 但 `hugo server -D` 本地可见
+
+## 配置速查
+
+### hugo.yaml 关键项
+- `baseURL: "https://lastdba.com/"` — 改域名时改这里
+- `hasCJKLanguage: true` — 中文优化
+- `summaryLength: 80` — 自动摘要长度
+- `pagination.pagerSize: 10` — 每页 10 篇文章
+- `params.readingTime: 300` — 中文阅读速度 (字/分钟)
+- `markup.goldmark.renderer.unsafe: true` — 允许文章内嵌 HTML
+- `permalinks.posts: "/:year/:month/:day/:slug/"` — Jekyll 兼容 URL 格式
+- `mainSections: ["posts"]` — 告诉 Hugo 内容是 posts/
+
+### params.yaml 关键项
+- `colorScheme: "ocean"` — 主题配色
+- `homepage.layout: "profile"` — 首页布局 (hero 布局被拒绝过)
+- `article.showHero: false` — 文章不显示 hero 图
+- `article.showWordCount: true` — 显示字数 (中文不准但大致可用)
+- `footer.showLicense: true` — 底部显示 CC BY-NC-SA 4.0
+- `footer.showThemeAttribution: false` — 不显示 Blowfish 版权
+
+## 自定义 Layout 清单
+
+以下文件覆盖了 Blowfish 默认模板，修改前务必理解其用途:
+
+| 文件 | 用途 |
+|------|------|
+| `layouts/_default/_markup/render-image.html` | **图片路径转换** — PicGo raw URL → `/img/`, Typora 本地路径 → `/img/` |
+| `layouts/partials/custom-head.html` | favicon 多重声明 (覆盖 Blowfish 默认鱼图标) |
+| `layouts/partials/article-link/card.html` | 首页文章卡片 — 用 `description` 替代自动摘要 |
+| `layouts/partials/article-link/simple.html` | 分类页文章列表 — 用 `description` 替代自动摘要 |
+| `layouts/partials/home/profile.html` | 首页 profile 区域 (可能有定制) |
+| `layouts/partials/home/featured.html` | 精选文章区域 |
+| `layouts/partials/header/components/desktop-menu.html` | 桌面端导航菜单 |
+| `layouts/shortcodes/article-count.html` | 短代码 — 动态统计文章总数 |
+| `layouts/shortcodes/category-count.html` | 短代码 — 动态统计分类总数 |
+
+## 图片处理铁律
+
+1. **图片路径不要手动改** — render hook 自动处理所有转换
+2. **CSDN 防盗链图片** — 已全部下载到 `static/img/csdn/` 并替换了 markdown 中的 URL。该目录在 `.gitignore` 中
+3. **图片压缩** — 当前 764 张图 251MB。新增图片前应考虑压缩
+4. **Chrome 缓存** — 图片更新后如果用户说 "还是看不到", 先让用户硬刷新 (Cmd+Shift+R) 或开隐身窗口。十有八九是 Chrome 缓存了旧的 404
+
+## 部署与 DNS
+
+- **GitHub Actions**: `.github/workflows/hugo.yml` (主), `.github/workflows/jekyll-gh-pages.yml` (遗留, 应删除)
+- **Cloudflare**: DNS 橙色云 🧡 proxy 模式, 亚太节点加速中国访问
+- **CNAME**: `static/CNAME` 文件包含 `lastdba.com`, 必须在每次部署的 `public/` 中存在, 防止 GitHub Pages 重置自定义域名
+- **Pages 设置**: Source → "GitHub Actions"
+
+## 设计原则
+
+- **优先 Blowfish 原生样式** — 能用 Tailwind 类解决的问题不加自定义 CSS
+- **不要加卡片边框/阴影/渐变** — 用户明确拒绝
+- **不要用 hero layout** — 已尝试并被拒
+- **自定义 CSS 只用于无法避免的场景** — 如页面背景装饰, 且用 `body::before` 不影响深色模式
+- **视觉改动一次只展示一个方案** — 用户说"丑"或"不搭"就直接放弃该方向
+- **CSS 选择器不要目标 Blowfish 内部 DOM** — `<sectionheader>` 等选择器静默失败
+- **修改后先 browser_navigate 验证** — 不要直接让用户检查
+
+## 常见踩坑
+
+1. **Typora 写绝对路径** — macOS 版 Typora 无视相对路径设置, 写 `/Users/.../static/img/xxx.png`。render hook 处理一部分, 但首选 PicGo 粘贴
+2. **Hugo 版本** — 必须 0.158.0+, CI 固定 0.161.1. `brew install hugo` 默认最新版, 本地开发前确认版本
+3. **Submodule** — Blowfish 是 git submodule, clone 时需要 `--recurse-submodules`
+4. **YAML 菜单** — Blowfish 的 dropdown 子菜单在 YAML 下不可用, 全部用 flat menu
+5. **markdown 与 HTML 混写** — goldmark 会剥离 `<div>`, HTML 块必须纯 HTML (不用 `---`, `###` 等 markdown 分隔符)
+6. **favicon** — 需要同时覆盖 `favicon.ico`, `favicon-32x32.png`, `favicon-16x16.png`, 否则 Blowfish 默认鱼图标复现
+7. **hugo build lock** — `.hugo_build.lock` 已在 `.gitignore`, 不要提交
+8. **`.DS_Store`** — 已在 `.gitignore`, macOS 下 `git add -A` 会自动跳过
